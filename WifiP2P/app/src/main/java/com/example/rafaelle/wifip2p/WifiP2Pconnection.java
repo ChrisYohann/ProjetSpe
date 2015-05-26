@@ -1,16 +1,21 @@
 package com.example.rafaelle.wifip2p;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Build;
 import android.os.Looper;
 
 import java.nio.channels.Channel;
+import java.util.Iterator;
 
 /**
  * Created by Rafaelle on 21/05/2015.
@@ -24,13 +29,16 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private WifiP2PActivity mActivity;
     private WifiP2pManager.PeerListListener myPeerListListener;
     private IntentFilter mIntentFilter = new IntentFilter();
+    private WifiP2pDevice device;
+    private WifiP2pConfig config = new WifiP2pConfig();
+    String deviceAddress;
 
 
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Looper looper,
                              WifiP2PActivity activity) {
         super();
         this.mManager = manager;
-        this.mActivity = activity; //pour relier ï¿½ l'activitï¿½ principale
+        this.mActivity = activity; //pour relier avec l'activité principale
 
         //mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
         //j'appelle directement cette mï¿½thode dans activity
@@ -82,6 +90,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         mManager.discoverPeers((WifiP2pManager.Channel) mChannel, this);
     }
 
+
     @Override
     public void onSuccess() {
 
@@ -106,10 +115,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onGroupInfoAvailable(WifiP2pGroup group) {
 
     }
-
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers) {
-
+        //essayer de se connecter à un port available
+        device=peers.get(deviceAddress); //faut touver le deviceAdress quelque part pas trop compris
+        config.deviceAddress = device.deviceAddress;
+        mManager.connect((WifiP2pManager.Channel) mChannel, config, this);
     }
 
 }

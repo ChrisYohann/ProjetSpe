@@ -33,7 +33,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         this.mChannel = channel;
         this.mActivity = activity;
 
-        mManager = (WifiP2pManager) ctxt.getSystemService();
+        mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
+        //il me dise de créer une méthode getsystemservice dans context
         mChannel = (Channel) mManager.initialize(ctxt, looper, null);
 
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);

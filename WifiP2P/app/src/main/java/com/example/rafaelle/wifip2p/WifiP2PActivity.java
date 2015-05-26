@@ -1,6 +1,8 @@
 package com.example.rafaelle.wifip2p;
 
 import android.content.BroadcastReceiver;
+import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.support.v7.app.ActionBarActivity;
@@ -15,6 +17,7 @@ import java.nio.channels.Channel;
 public class WifiP2PActivity extends ActionBarActivity {
     WifiP2pManager mManager;
     BroadcastReceiver mReceiver;
+    Context context;
     IntentFilter mIntentFilter = new IntentFilter();
 
 
@@ -23,6 +26,7 @@ public class WifiP2PActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_wifi_p2_p);
+        context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 
     }

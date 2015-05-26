@@ -20,22 +20,22 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         WifiP2pManager.PeerListListener {
 
     private WifiP2pManager mManager;
-    private Channel mChannel;
+    private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
     private WifiP2PActivity mActivity;
     private WifiP2pManager.PeerListListener myPeerListListener;
     private IntentFilter mIntentFilter = new IntentFilter();
 
 
-    public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Looper looper, Channel channel,
+    public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Looper looper,
                              WifiP2PActivity activity) {
         super();
         this.mManager = manager;
-        this.mChannel = channel;
-        this.mActivity = activity;
+        this.mActivity = activity; //pour relier à l'activité principale
 
-        mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
-        //il me dise de créer une méthode getsystemservice dans context
-        mChannel = (Channel) mManager.initialize(ctxt, looper, null);
+        //mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
+        //j'appelle directement cette méthode dans activity
+        this.mChannel = (Channel) mManager.initialize(ctxt, looper, null);
+        //j'initialise la connection
 
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);

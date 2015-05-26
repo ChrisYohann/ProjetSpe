@@ -8,6 +8,7 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Looper;
 
 import java.nio.channels.Channel;
 
@@ -17,23 +18,23 @@ import java.nio.channels.Channel;
 public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pManager.ActionListener, WifiP2pManager.ChannelListener,
         WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener,
         WifiP2pManager.PeerListListener {
+
     private WifiP2pManager mManager;
     private Channel mChannel;
     private WifiP2PActivity mActivity;
     private WifiP2pManager.PeerListListener myPeerListListener;
-    private Intent mIntentFilter = new IntentFilter();
+    private IntentFilter mIntentFilter = new IntentFilter();
 
 
-    public WifiP2Pconnection(WifiP2pManager manager, Channel channel,
+    public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Looper looper, Channel channel,
                              WifiP2PActivity activity) {
         super();
         this.mManager = manager;
         this.mChannel = channel;
         this.mActivity = activity;
 
-        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(this, getMainLooper(), null);
-        mReceiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);
+        mManager = (WifiP2pManager) ctxt.getSystemService();
+        mChannel = (Channel) mManager.initialize(ctxt, looper, null);
 
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);

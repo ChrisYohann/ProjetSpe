@@ -23,6 +23,7 @@ public class WifiP2PActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_wifi_p2_p);
+        Context context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 
     }

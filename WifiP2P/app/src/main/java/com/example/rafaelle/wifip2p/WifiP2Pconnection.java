@@ -77,7 +77,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     }
 
-    //once this is called, android throws a PEERS_CHANGED_EVENT if successful
+    //trouve les ports disponibles
     public void discoverPeers(){
         mManager.discoverPeers((WifiP2pManager.Channel) mChannel, this);
     }

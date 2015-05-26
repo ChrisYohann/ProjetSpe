@@ -14,7 +14,6 @@ import java.nio.channels.Channel;
 
 public class WifiP2PActivity extends ActionBarActivity {
     WifiP2pManager mManager;
-    WifiP2pManager.Channel mChannel;
     BroadcastReceiver mReceiver;
     IntentFilter mIntentFilter = new IntentFilter();
 
@@ -41,9 +40,6 @@ public class WifiP2PActivity extends ActionBarActivity {
         unregisterReceiver(mReceiver);
     }
 
-    //once this is called, android throws a PEERS_CHANGED_EVENT if successful
-    public void discoverPeers(){
-        mManager.discoverPeers(mChannel, (WifiP2pManager.ActionListener) this);
-    }
+
 
 }

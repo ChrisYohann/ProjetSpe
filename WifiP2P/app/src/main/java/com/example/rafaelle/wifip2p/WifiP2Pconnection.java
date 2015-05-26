@@ -30,10 +30,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                              WifiP2PActivity activity) {
         super();
         this.mManager = manager;
-        this.mActivity = activity; //pour relier à l'activité principale
+        this.mActivity = activity; //pour relier ï¿½ l'activitï¿½ principale
 
         //mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
-        //j'appelle directement cette méthode dans activity
+        //j'appelle directement cette mï¿½thode dans activity
         this.mChannel = (Channel) mManager.initialize(ctxt, looper, null);
         //j'initialise la connection
 
@@ -75,6 +75,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             }
         }
 
+    }
+
+    //once this is called, android throws a PEERS_CHANGED_EVENT if successful
+    public void discoverPeers(){
+        mManager.discoverPeers((WifiP2pManager.Channel) mChannel, this);
     }
 
     @Override

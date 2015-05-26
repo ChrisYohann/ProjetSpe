@@ -16,6 +16,7 @@ import java.nio.channels.Channel;
 
 public class WifiP2PActivity extends ActionBarActivity {
     WifiP2pManager mManager;
+    WifiP2Pconnection WifiConnection;
     BroadcastReceiver mReceiver;
     Context context;
     IntentFilter mIntentFilter = new IntentFilter();

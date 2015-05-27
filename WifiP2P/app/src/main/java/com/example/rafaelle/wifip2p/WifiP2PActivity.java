@@ -29,7 +29,7 @@ public class WifiP2PActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("Dans on create", "on rentre bien dans OnCreate");
+        Log.v("NOUS", "on rentre bien dans OnCreate");
         setContentView(R.layout.activity_wifi_p2_p);
         Context context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
@@ -42,14 +42,14 @@ public class WifiP2PActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.v("Dans onResume", "on rentre bien dans OnResume");
+        Log.v("NOUS", "on rentre bien dans OnResume");
         registerReceiver(mReceiver, mIntentFilter);
 }
     /* unregister the broadcast receiver */
     @Override
     protected void onPause() {
         super.onPause();
-        Log.v("Dans onPause", "on rentre bien dans OnPause");
+        Log.v("NOUS", "on rentre bien dans OnPause");
         unregisterReceiver(mReceiver);
     }
 

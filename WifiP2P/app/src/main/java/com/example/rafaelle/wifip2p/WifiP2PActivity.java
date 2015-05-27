@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -30,8 +31,10 @@ public class WifiP2PActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         Log.v("Dans on create", "on rentre bien dans OnCreate");
         setContentView(R.layout.activity_wifi_p2_p);
-        context = getApplicationContext();
+        Context context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        Looper looper= getMainLooper();
+        WifiConnection=new WifiP2Pconnection(context,mManager,looper,this);
 
     }
 

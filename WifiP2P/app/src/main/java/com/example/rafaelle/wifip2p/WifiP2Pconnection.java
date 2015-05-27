@@ -1,14 +1,18 @@
 package com.example.rafaelle.wifip2p;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.app.AlertDialog;
+import android.os.Build;
 import android.os.Looper;
 import android.util.Log;
 
@@ -30,6 +34,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     AlertDialog.Builder adbldr;
     private WifiP2pManager.PeerListListener myPeerListListener;
     private IntentFilter mIntentFilter = new IntentFilter();
+    private WifiP2pDevice device;
+    private WifiP2pConfig config = new WifiP2pConfig();
+    String deviceAddress;
 
 
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Looper looper,
@@ -98,7 +105,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     }
 
-    //once this is called, android throws a PEERS_CHANGED_EVENT if successful
+    //trouve les ports disponibles
     public void discoverPeers(){
         mManager.discoverPeers((WifiP2pManager.Channel) mChannel, this);
     }
@@ -148,10 +155,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onGroupInfoAvailable(WifiP2pGroup group) {
 
     }
-
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers) {
-
+        //essayer de se connecter � un port available
+        device=peers.get(deviceAddress); //faut touver le deviceAdress quelque part pas trop compris
+        config.deviceAddress = device.deviceAddress;
+        mManager.connect((WifiP2pManager.Channel) mChannel, config, this);
     }
 
 }

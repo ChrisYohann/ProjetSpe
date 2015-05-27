@@ -33,7 +33,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private Boolean discoveryOn=false;
     AlertDialog.Builder adbldr;
     private WifiP2pManager.PeerListListener myPeerListListener;
-    private IntentFilter mIntentFilter = new IntentFilter();
+    private IntentFilter mIntentFilter = new IntentFilter(); //seulement certaines actions sont filtrées
     private WifiP2pDevice device;
     private WifiP2pConfig config = new WifiP2pConfig();
     String deviceAddress;
@@ -50,13 +50,16 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         adbldr = new AlertDialog.Builder(ctx);
         //mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
         //j'appelle directement cette mï¿½thode dans activity
-        this.mChannel = (Channel) mManager.initialize(ctxt, looper, null);
-        //j'initialise la connection
 
+
+//on définit les actions qui vont être filtrées
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        ctx.registerReceiver(this,mIntentFilter); //définit le contexte
+        this.mChannel = (Channel) mManager.initialize(ctx, looper, null);
+        //j'initialise la connection
     }
 
 
@@ -155,6 +158,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onGroupInfoAvailable(WifiP2pGroup group) {
 
     }
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers) {

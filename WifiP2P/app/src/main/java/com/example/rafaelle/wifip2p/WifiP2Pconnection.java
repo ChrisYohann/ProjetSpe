@@ -42,17 +42,18 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Looper looper,
                              WifiP2PActivity activity) {
         super();
-        Log.v("Dans WifiP2pCo", "on rentre bien dans WifiP2PCo");
+        Log.v("NOUS", "on rentre bien dans WifiP2PCo");
         ctx=ctxt;
 
         this.mManager = manager;
         this.mActivity = activity; //pour relier ï¿½ l'activitï¿½ principale
         adbldr = new AlertDialog.Builder(ctx);
+        Log.v("NOUS", "construction de la boite de dialogue(alert)");
         //mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
         //j'appelle directement cette mï¿½thode dans activity
 
-
-//on définit les actions qui vont être filtrées
+        Log.v("NOUS", "avant les mIntenderF");
+//on définit les actions du filtres, on ne s'occupe que de ces actions
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
@@ -60,6 +61,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         ctx.registerReceiver(this,mIntentFilter); //définit le contexte
         this.mChannel = (Channel) mManager.initialize(ctx, looper, null);
         //j'initialise la connection
+        Log.v("NOUS", "apres les mIntenderF");
     }
 
 
@@ -67,29 +69,29 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
-        Log.v("Dans onreceive", "on rentre bien dans OnReceive");
+        Log.v("NOUS", "on rentre bien dans OnReceive");
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-            Log.v("Dans onReceive", "l'etat de la wifi est changÃ©");
+            Log.v("NOUS", "l'etat de la wifi est changÃ©");
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
-                Log.v("Dans onReceive", "l'etat de la wifi est ok");
+                Log.v("NOUS", "l'etat de la wifi est ok");
 
                 // Wifi P2P is enabled
-            } else {            Log.v("Dans onReceive", "l'etat de la wifi est pas ok");
+            } else {            Log.v("NOUS", "l'etat de la wifi est pas ok");
 
                 // Wi-Fi P2P is not enabled
             }
             // Check to see if Wi-Fi is enabled and notify appropriate activity
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-            Log.v("Dans onReceive", "on a de nouveau pairs Ã  rechercher");
+            Log.v("NOUS", "on a de nouveau pairs Ã  rechercher");
 
             // Call WifiP2pManager.requestPeers() to get a list of current peers
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-            Log.v("Dans onReceive", "repondre Ã  une nouvelle co ou se deco");
+            Log.v("NOUS", "repondre Ã  une nouvelle co ou se deco");
 
             // Respond to new connection or disconnections
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-            Log.v("Dans onReceive", "dire que notre etat de co change");
+            Log.v("NOUS", "dire que notre etat de co change");
 
             // Respond to this device's wifi state changing
         }
@@ -100,7 +102,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             // asynchronous call and the calling activity is notified with a
             // callback on PeerListListener.onPeersAvailable()
             if (mManager != null) {
-                Log.v("Dans onReceive", "on cherche de nouveau pairs");
+                Log.v("NOUS", "on cherche de nouveau pairs");
 
                 mManager.requestPeers((WifiP2pManager.Channel) mChannel, myPeerListListener);
             }

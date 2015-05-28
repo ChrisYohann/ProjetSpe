@@ -5,18 +5,21 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Looper;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.view.View;
 import android.widget.Button;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.util.Log;
-
+import android.widget.Toast;
 
 
 public class WifiP2PActivity extends Activity {
@@ -40,12 +43,6 @@ public class WifiP2PActivity extends Activity {
         context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         Looper looper= getMainLooper();
-        Log.v("NOUS", "avant");
-        //blabla =new TextView(this);
-        Log.v("NOUS", "milieu");
-
-        //blabla.setText("hello je suis bien connecte");
-        Log.v("NOUS", "apres");
         Log.v("NOUS", "avant les mIntenderF");
 //on d�finit les actions du filtres, on ne s'occupe que de ces actions
         filtre.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -56,8 +53,16 @@ public class WifiP2PActivity extends Activity {
         this.channel = (WifiP2pManager.Channel) mManager.initialize(context, looper, null);
         //j'initialise la connection
         Log.v("NOUS", "apres init canal");
-        //mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
-        //registerReceiver(mReceiver,mReceiver)
+        mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
+        registerReceiver(mReceiver, filtre);
+
+        this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
+        //TODO: cast OK ?
+        this.buttonConnect.setOnClickListener((View.OnClickListener) this);
+        this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
+        this.buttonFind.setOnClickListener((View.OnClickListener) this);
+
+
     }
 
     /* register the broadcast receiver with the intent values to be matched */
@@ -88,7 +93,7 @@ public class WifiP2PActivity extends Activity {
     public void closeConnections(View v){
         WifiConnection.closeConnections();
     }
-
+  
 
 
 }

@@ -51,16 +51,13 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         Looper looper= getMainLooper();
-        Log.v("NOUS", "avant les mIntenderF");
 //on d�finit les actions du filtres, on ne s'occupe que de ces actions
         filtre.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         filtre.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         filtre.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         filtre.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        Log.v("NOUS", "apres les mIntenderF");
         this.channel = (WifiP2pManager.Channel) mManager.initialize(context, looper, null);
         //j'initialise la connection
-        Log.v("NOUS", "apres init canal");
         mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
         registerReceiver(mReceiver, filtre);
 
@@ -89,7 +86,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         Log.v("NOUS", "on rentre bien dans OnPause");
         unregisterReceiver(mReceiver);
     }
-
+/*
     public void startScan(View v){
         if(((Button)findViewById(R.id.bouton)).getText().equals("Start Scanning")){
             mReceiver.startDiscovery();
@@ -98,7 +95,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
             mReceiver.stopDiscovery();
             ((Button)findViewById(R.id.bouton)).setText("Start Scanning");
         }
-    }
+    }*/
 
     public void closeConnections(View v){
         mReceiver.closeConnections();
@@ -107,7 +104,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     public void onClick(View v) {
         if(v == buttonConnect)
         {
-            connect(mReceiver.getDevice());
+            mReceiver.tryConnection(1);//pour une paire
         }
         else if(v == buttonFind)
         {
@@ -116,10 +113,10 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     }
 
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+  /*  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mReceiver.tryConnection(position);
-    }
-
+    }*/
+/*
     public void connect(WifiP2pDevice device)
     {
         WifiP2pConfig config = new WifiP2pConfig();
@@ -142,7 +139,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         {
             Toast.makeText(WifiP2PActivity.this, "Couldn't connect, device is not found", Toast.LENGTH_SHORT).show();
         }
-    }
+    }*/
 
     public void find()
     {

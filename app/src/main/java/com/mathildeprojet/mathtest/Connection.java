@@ -21,7 +21,7 @@ public class Connection {
     String peerMAC;
     String myIP;
     String myMAC;
-    int groupowner = 0; //pour determiner si c'est dans notre réseau ou un réseau extérieure
+    int grp = 0; //pour determiner si c'est dans notre rï¿½seau ou un rï¿½seau extï¿½rieure
     int childport;
     int sendport;
     int recvport;
@@ -44,13 +44,13 @@ public class Connection {
     }
 
     public void setPeerInfo( String mac, String ip, int cp, int go){
-        this.groupowner = go;
+        this.grp = go;
         this.peerMAC = mac;
         this.peerIP = ip;
 
         this.childport = cp;
-        this.sendport = (this.groupowner==1) ? this.childport : this.childport+1;
-        this.recvport = (this.groupowner==1) ? this.childport+1 : this.childport;
+        this.sendport = (this.grp==1) ? this.childport : this.childport+1;
+        this.recvport = (this.grp==1) ? this.childport+1 : this.childport;
     }
 
     public void disconnect() {

@@ -98,6 +98,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             Log.v("NOUS", "on a de nouveau pairs à rechercher");
             //TODO:nouveau
             if (mManager !=null) {
+            //request peers va permettre de connaître les ports auxquels on PEUT se connecter, il s'appuie sur la liste des pairs disponibles
                 mManager.requestPeers(mChannel, myPeerListListener);
             }
             // Call WifiP2pManager.requestPeers() to get a list of current peers
@@ -118,7 +119,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         }
     }
 
-    //trouve les ports disponibles
+    //trouve les pairs disponibles
     public void discoverPeers(){
         mManager.discoverPeers((WifiP2pManager.Channel) mChannel, this);
     }
@@ -173,8 +174,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers) {
-        //je n'ai auuuuuuuucuuuuuuuuune id�e de comment on obtient cette fameuse "WifiP2pDeviceList peers"
-        //cette m�thode � ajouter les connections avec les ports valables
+        //La liste des pairs valables sont les appareils qui cherchent à se connecter on doit les avoir dès le début.
+        //cette méthode à ajouter les appareils disponibles aux connections.
         devicelist = peers.getDeviceList();
         Iterator it = devicelist.iterator();
         Connection testcon = new Connection(ctx,mChannel,mManager,this,null);
@@ -191,13 +192,15 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             } else{ //si la connection existe, tester la connection!
 
                 Connection c = connections.get(connections.indexOf(testcon));
-                //adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
         }
 
 
     }
 
+    public void tryConnection(int position){
 
+    }
 
 }

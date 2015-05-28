@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,14 +20,12 @@ import android.util.Log;
 
 
 
-public class WifiP2PActivity extends Activity {
+public class WifiP2PActivity extends Activity implements AdapterView.OnItemClickListener {
     private WifiP2pManager mManager;
-    private WifiP2Pconnection WifiConnection;
     private Button buttonFind;
     private Channel channel;
     private Button buttonConnect;
-    private BroadcastReceiver mReceiver = null;
-
+    private WifiP2Pconnection mReceiver = null;
     private Context context;
     private TextView blabla;
     private IntentFilter filtre = new IntentFilter();
@@ -56,7 +55,7 @@ public class WifiP2PActivity extends Activity {
         this.channel = (WifiP2pManager.Channel) mManager.initialize(context, looper, null);
         //j'initialise la connection
         Log.v("NOUS", "apres init canal");
-        //mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
+        mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
         //registerReceiver(mReceiver,mReceiver)
     }
 
@@ -77,18 +76,21 @@ public class WifiP2PActivity extends Activity {
 
     public void startScan(View v){
         if(((Button)findViewById(R.id.bouton)).getText().equals("Start Scanning")){
-            WifiConnection.startDiscovery();
+            mReceiver.startDiscovery();
             ((Button)findViewById(R.id.bouton)).setText("Stop Scanning");
         }else{
-            WifiConnection.stopDiscovery();
+            mReceiver.stopDiscovery();
             ((Button)findViewById(R.id.bouton)).setText("Start Scanning");
         }
     }
 
     public void closeConnections(View v){
-        WifiConnection.closeConnections();
+        mReceiver.closeConnections();
     }
 
 
-
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mReceiver.tryConnection(position);
+    }
 }

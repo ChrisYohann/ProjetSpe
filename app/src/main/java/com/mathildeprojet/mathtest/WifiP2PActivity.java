@@ -14,25 +14,26 @@ import android.os.Bundle;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
 
 
-public class WifiP2PActivity extends Activity {
+public class WifiP2PActivity extends Activity implements AdapterView.OnItemClickListener {
     private WifiP2pManager mManager;
-    private WifiP2Pconnection WifiConnection;
     private Button buttonFind;
     private Channel channel;
     private Button buttonConnect;
-    private BroadcastReceiver mReceiver = null;
-
+    private WifiP2Pconnection mReceiver = null;
     private Context context;
     private TextView blabla;
     private IntentFilter filtre = new IntentFilter();
+    ListView peerlist;
 
 
     @Override
@@ -62,7 +63,9 @@ public class WifiP2PActivity extends Activity {
         this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
         this.buttonFind.setOnClickListener((View.OnClickListener) this);
 
-
+        //peerlist = (ListView)findViewById(R.id.peer_list);
+        //peerlist.setAdapter(wifiConnection.adapter);
+        //peerlist.setOnItemClickListener(this);
     }
 
     /* register the broadcast receiver with the intent values to be matched */
@@ -82,18 +85,21 @@ public class WifiP2PActivity extends Activity {
 
     public void startScan(View v){
         if(((Button)findViewById(R.id.bouton)).getText().equals("Start Scanning")){
-            WifiConnection.startDiscovery();
+            mReceiver.startDiscovery();
             ((Button)findViewById(R.id.bouton)).setText("Stop Scanning");
         }else{
-            WifiConnection.stopDiscovery();
+            mReceiver.stopDiscovery();
             ((Button)findViewById(R.id.bouton)).setText("Start Scanning");
         }
     }
 
     public void closeConnections(View v){
-        WifiConnection.closeConnections();
+        mReceiver.closeConnections();
     }
   
 
-
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mReceiver.tryConnection(position);
+    }
 }

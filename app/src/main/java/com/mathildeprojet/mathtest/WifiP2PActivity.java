@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.util.Log;
 
@@ -29,6 +30,7 @@ public class WifiP2PActivity extends Activity implements AdapterView.OnItemClick
     private Context context;
     private TextView blabla;
     private IntentFilter filtre = new IntentFilter();
+    ListView peerlist;
 
 
     @Override
@@ -57,6 +59,9 @@ public class WifiP2PActivity extends Activity implements AdapterView.OnItemClick
         Log.v("NOUS", "apres init canal");
         mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
         //registerReceiver(mReceiver,mReceiver)
+        //peerlist = (ListView)findViewById(R.id.peer_list);
+        //peerlist.setAdapter(wifiConnection.adapter);
+        //peerlist.setOnItemClickListener(this);
     }
 
     /* register the broadcast receiver with the intent values to be matched */

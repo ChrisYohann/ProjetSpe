@@ -7,8 +7,14 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.os.Looper;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
+import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
+import android.view.View.OnClickListener;
+import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -24,7 +30,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-public class WifiP2PActivity extends Activity implements AdapterView.OnItemClickListener {
+public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,PeerListListener,ConnectionInfoListener {
     private WifiP2pManager mManager;
     private Button buttonFind;
     private Channel channel;
@@ -32,6 +38,7 @@ public class WifiP2PActivity extends Activity implements AdapterView.OnItemClick
     private WifiP2Pconnection mReceiver = null;
     private Context context;
     private TextView blabla;
+    WifiP2pDeviceList peers;
     private IntentFilter filtre = new IntentFilter();
     ListView peerlist;
 
@@ -59,7 +66,7 @@ public class WifiP2PActivity extends Activity implements AdapterView.OnItemClick
 
         this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
         //TODO: cast OK ?
-        this.buttonConnect.setOnClickListener((View.OnClickListener) this);
+        this.buttonConnect.setOnClickListener(this);
         this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
         this.buttonFind.setOnClickListener((View.OnClickListener) this);
 
@@ -96,10 +103,76 @@ public class WifiP2PActivity extends Activity implements AdapterView.OnItemClick
     public void closeConnections(View v){
         mReceiver.closeConnections();
     }
-  
 
-    @Override
+    public void onClick(View v) {
+        if(v == buttonConnect)
+        {
+            connect(mReceiver.getDevice());
+        }
+        else if(v == buttonFind)
+        {
+            find();
+        }
+
+    }
+
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mReceiver.tryConnection(position);
+    }
+
+    public void connect(WifiP2pDevice device)
+    {
+        WifiP2pConfig config = new WifiP2pConfig();
+        if(device != null)
+        {
+            config.deviceAddress = device.deviceAddress;
+            mManager.connect(channel, config, new ActionListener() {
+
+                public void onSuccess() {
+                    //success
+                }
+
+
+                public void onFailure(int reason) {
+                    //fail
+                }
+            });
+        }
+        else
+        {
+            Toast.makeText(WifiP2PActivity.this, "Couldn't connect, device is not found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void find()
+    {
+        mManager.discoverPeers(channel, new
+                WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(WifiP2PActivity.this, "Finding Peers", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(int reasonCode) {
+                        Toast.makeText(WifiP2PActivity.this, "Couldnt find peers ",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peers){
+        mReceiver.onPeersAvailable(peers);
+    }
+
+    @Override
+    public void onConnectionInfoAvailable(WifiP2pInfo info) {
+        String infoname = info.groupOwnerAddress.toString();
+    }
+
+    @Override
+    public void onChannelDisconnected() {
+
     }
 }

@@ -74,7 +74,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         //j'appelle directement cette m�thode dans activity
     }
 
-
+    public WifiP2pDevice getDevice() {
+        return device;
+    }
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();

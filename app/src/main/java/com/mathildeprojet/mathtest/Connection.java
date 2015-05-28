@@ -21,10 +21,11 @@ public class Connection {
     String peerMAC;
     String myIP;
     String myMAC;
-    int groupowner = 0; //pour determiner s'il envoie ou s'il reçcoit
+    int groupowner = 0; //pour determiner si c'est dans notre réseau ou un réseau extérieure
     int childport;
     int sendport;
     int recvport;
+    public boolean isConnected;
 
     public Connection(Context ctx, Channel mChannel, WifiP2pManager mManager, WifiP2Pconnection cmgr, WifiP2pDevice device) {
         cntxt = ctx;
@@ -50,5 +51,8 @@ public class Connection {
         this.childport = cp;
         this.sendport = (this.groupowner==1) ? this.childport : this.childport+1;
         this.recvport = (this.groupowner==1) ? this.childport+1 : this.childport;
+    }
+
+    public void disconnect() {
     }
 }

@@ -127,8 +127,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     //allow manager to discover peers and connect to other devices
     public void startDiscovery(){
         discoveryOn = true;
-        Intent i = new Intent("scanAlarm");
-        ctx.sendBroadcast(i);
+        //Intent i = new Intent("scanAlarm");
+        //ctx.sendBroadcast(i);
     }
 
     public void closeConnections(){
@@ -189,17 +189,33 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 connections.add(con);
                 adapter.notifyDataSetChanged(); //remarque que la configuration a chang�
 
-            } else{ //si la connection existe, tester la connection!
-
+            } /*else{
+                //si la connection existe
                 Connection c = connections.get(connections.indexOf(testcon));
                 adapter.notifyDataSetChanged();
-            }
+            } */
         }
 
 
     }
 
     public void tryConnection(int position){
+        Connection connection = null;
+
+        //make sure there's a connection object at given index
+        if(connections.get(position) == null)
+            return;
+
+        //check if we're already connected
+        //if so disconnect, else try connection to device
+        if(connections.get(position).isConnected){
+            connections.get(position).disconnect();
+        }else{
+            connection = connections.get(position);
+            config.deviceAddress = connection.dev.deviceAddress;
+            mManager.connect(mChannel, config,this);
+        }
+
 
     }
 

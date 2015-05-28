@@ -5,18 +5,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
-import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.*;
+import android.net.wifi.p2p.WifiP2pManager.*;
+
 import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Looper;
 import android.util.Log;
 
-import java.nio.channels.Channel;
+
+
 import java.util.Iterator;
 
 /**
@@ -30,10 +35,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
     private WifiP2PActivity mActivity;
     private Context ctx;
+    private Looper loop;
     private Boolean discoveryOn=false;
     AlertDialog.Builder adbldr;
     private WifiP2pManager.PeerListListener myPeerListListener;
-    private IntentFilter mIntentFilter = new IntentFilter(); //seulement certaines actions sont filtrées
+    private IntentFilter moIntentFilter = new IntentFilter(); //seulement certaines actions sont filtrï¿½es
     private WifiP2pDevice device;
     private WifiP2pConfig config = new WifiP2pConfig();
     String deviceAddress;
@@ -44,24 +50,26 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         super();
         Log.v("NOUS", "on rentre bien dans WifiP2PCo");
         ctx=ctxt;
+        loop = looper;
 
         this.mManager = manager;
         this.mActivity = activity; //pour relier ï¿½ l'activitï¿½ principale
         adbldr = new AlertDialog.Builder(ctx);
-        Log.v("NOUS", "construction de la boite de dialogue(alert)");
+        Log.v("NOUS", "construction de la boite de dialogue(alert)" );
         //mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
         //j'appelle directement cette mï¿½thode dans activity
-
         Log.v("NOUS", "avant les mIntenderF");
-//on définit les actions du filtres, on ne s'occupe que de ces actions
+//on dï¿½finit les actions du filtres, on ne s'occupe que de ces actions
+        IntentFilter mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        ctx.registerReceiver(this,mIntentFilter); //définit le contexte
-        this.mChannel = (Channel) mManager.initialize(ctx, looper, null);
-        //j'initialise la connection
+        ctx.registerReceiver(this, mIntentFilter); //dï¿½finit le contexte
         Log.v("NOUS", "apres les mIntenderF");
+        this.mChannel = mManager.initialize(ctx, loop, null);
+        //j'initialise la connection
+        Log.v("NOUS", "apres le channel");
     }
 
 

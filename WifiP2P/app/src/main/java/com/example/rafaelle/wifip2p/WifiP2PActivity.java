@@ -33,6 +33,7 @@ public class WifiP2PActivity extends ActionBarActivity {
         setContentView(R.layout.activity_wifi_p2_p);
         Context context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        Log.v("NOUS","on récupère bien un WifiP2PManager");
         Looper looper= getMainLooper();
         WifiConnection=new WifiP2Pconnection(context,mManager,looper,this);
 

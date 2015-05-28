@@ -17,6 +17,7 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
+import android.view.View;
 import android.widget.Toast;
 import android.app.AlertDialog;
 import android.widget.TextView;
@@ -164,7 +165,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
-
+        String infoname = info.groupOwnerAddress.toString();
     }
 
     @Override
@@ -218,5 +219,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
     }
+
+
 
 }

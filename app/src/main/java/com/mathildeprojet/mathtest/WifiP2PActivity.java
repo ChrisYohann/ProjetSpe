@@ -5,11 +5,14 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Looper;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -18,7 +21,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.util.Log;
-
+import android.widget.Toast;
 
 
 public class WifiP2PActivity extends Activity implements AdapterView.OnItemClickListener {
@@ -41,12 +44,6 @@ public class WifiP2PActivity extends Activity implements AdapterView.OnItemClick
         context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         Looper looper= getMainLooper();
-        Log.v("NOUS", "avant");
-        //blabla =new TextView(this);
-        Log.v("NOUS", "milieu");
-
-        //blabla.setText("hello je suis bien connecte");
-        Log.v("NOUS", "apres");
         Log.v("NOUS", "avant les mIntenderF");
 //on d�finit les actions du filtres, on ne s'occupe que de ces actions
         filtre.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -58,7 +55,14 @@ public class WifiP2PActivity extends Activity implements AdapterView.OnItemClick
         //j'initialise la connection
         Log.v("NOUS", "apres init canal");
         mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
-        //registerReceiver(mReceiver,mReceiver)
+        registerReceiver(mReceiver, filtre);
+
+        this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
+        //TODO: cast OK ?
+        this.buttonConnect.setOnClickListener((View.OnClickListener) this);
+        this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
+        this.buttonFind.setOnClickListener((View.OnClickListener) this);
+
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
@@ -92,7 +96,7 @@ public class WifiP2PActivity extends Activity implements AdapterView.OnItemClick
     public void closeConnections(View v){
         mReceiver.closeConnections();
     }
-
+  
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -58,12 +58,12 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     String deviceAddress;
 
     //TODO: remplacer le TextView connecte par WifiP2PActivity activity !
-    public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Looper looper, BroadcastReceiver receiver,
+    public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Channel channel,
                              WifiP2PActivity activity) {
         super();
         Log.v("NOUS", "on rentre bien dans WifiP2PCo");
         this.ctx=ctxt;
-        this.lpr=looper;
+        this.mChannel=channel;
         this.mManager = manager;
         //this.console = connecte;
         this.mActivity = activity; //pour relier � l'activit� principale
@@ -71,18 +71,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         Log.v("NOUS", "construction de la boite de dialogue(alert)");
         //mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
         //j'appelle directement cette m�thode dans activity
-
-        Log.v("NOUS", "avant les mIntenderF");
-//on d�finit les actions du filtres, on ne s'occupe que de ces actions
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        ctx.registerReceiver(this, mIntentFilter); //d�finit le contexte
-        Log.v("NOUS", "apres les mIntenderF");
-        this.mChannel = (Channel) mManager.initialize(ctx, looper, null);
-        //j'initialise la connection
-        Log.v("NOUS", "apres init canal");
     }
 
 

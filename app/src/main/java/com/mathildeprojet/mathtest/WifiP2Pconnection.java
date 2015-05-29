@@ -35,23 +35,21 @@ import java.util.Iterator;
  * Created by Rafaelle on 21/05/2015.
  */
 public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pManager.ActionListener, WifiP2pManager.ChannelListener,
-        WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener,
-        WifiP2pManager.PeerListListener {
+        WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener
+       /* WifiP2pManager.PeerListListener*/ {
 
-    private Boolean discoveryOn=false;
+    //private Boolean discoveryOn=false;
 
     private Context ctx;
     private Looper lpr;
     AlertDialog.Builder adbldr;
-    //TextView console;
-    private IntentFilter mIntentFilter = new IntentFilter(); //seulement certaines actions sont filtr‘’‘’�es
 
     private WifiP2pManager mManager;
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
     private WifiP2PActivity mActivity;
 
     private WifiP2pManager.PeerListListener myPeerListListener;
-    private WifiP2pDevice device;
+    //private WifiP2pDevice device;
     private WifiP2pDeviceList peers;
     Collection<WifiP2pDevice> devicelist;
     private WifiP2pConfig config = new WifiP2pConfig();
@@ -63,21 +61,16 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Channel channel,
                              WifiP2PActivity activity) {
         super();
-        Log.v("NOUS", "on rentre bien dans WifiP2PCo");
         this.ctx=ctxt;
         this.mChannel=channel;
         this.mManager = manager;
-        //this.console = connecte;
         this.mActivity = activity; //pour relier � l'activit� principale
         adbldr = new AlertDialog.Builder(ctx);
-        Log.v("NOUS", "construction de la boite de dialogue(alert)");
-        //mManager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
-        //j'appelle directement cette m�thode dans activity
     }
-
+    /*
     public WifiP2pDevice getDevice() {
         return device;
-    }
+    }*/
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -103,8 +96,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             //TODO:nouveau
             if (mManager !=null) {
             //request peers va permettre de connaître les ports auxquels on PEUT se connecter, il s'appuie sur la liste des pairs disponibles
-                mManager.requestPeers(mChannel, myPeerListListener);
-                myPeerListListener.onPeersAvailable(peers);
+               //TODO:a ajouter si necessaire
+                //mManager.requestPeers(mChannel, myPeerListListener);
+                //myPeerListListener.onPeersAvailable(peers);
             }
             // Call WifiP2pManager.requestPeers() to get a list of current peers
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
@@ -114,7 +108,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
             if (networkInfo.isConnected()) {
                 //TODO: cast ?
-                mManager.requestConnectionInfo(mChannel, (WifiP2pManager.ConnectionInfoListener) mActivity);
+                mManager.requestConnectionInfo(mChannel, mActivity);
             }else {//c'est deconnecté
             }
             // Respond to new connection or disconnections
@@ -129,13 +123,14 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         mManager.discoverPeers((WifiP2pManager.Channel) mChannel, this);
     }
 
+    /*
     //allow manager to discover peers and connect to other devices
     public void startDiscovery(){
         discoveryOn = true;
         //Intent i = new Intent("scanAlarm");
         //ctx.sendBroadcast(i);
     }
-
+    */
     public void closeConnections(){
         mManager.removeGroup((WifiP2pManager.Channel) mChannel, this);
         //TODO: ici j'ai remplacé connection par notre classe c'est possible que je me soit trompé !sorry
@@ -146,10 +141,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         // }
         // adapter.notifyDataSetChanged();
     }
-
+    /*
     //stop trying to connect to other devices
     public void stopDiscovery(){ discoveryOn = false; }
-
+    */
     //m�thode d�finit pour l'interface actionListener
     @Override
     public void onSuccess() {
@@ -177,6 +172,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     }
 
+    /*
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers) {
         Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
@@ -200,11 +196,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 Connection c = connections.get(connections.indexOf(testcon));
                 adapter.notifyDataSetChanged();
             } */
-        }
+       // }
 
 
-    }
-
+   // }
+    /*
     public void tryConnection(int position){
         Connection connection = null;
 
@@ -220,10 +216,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             connection = connections.get(position);
             config.deviceAddress = connection.dev.deviceAddress;
             mManager.connect(mChannel, config,this);
-        }
+        }*/
 
 
-    }
+    //}
 
 
 

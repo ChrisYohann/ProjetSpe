@@ -109,7 +109,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             Log.v("NOUS", "on a de nouveau pairs à rechercher");
             if (mManager != null) {
                 mManager.requestPeers(mChannel, new WifiP2pManager.PeerListListener() {
-                    @Override
+
                     public void onPeersAvailable(WifiP2pDeviceList peers) {
                         Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
 
@@ -118,6 +118,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                     }
                 });
+
+
             }
             // Call WifiP2pManager.requestPeers() to get a list of current peers
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {

@@ -51,6 +51,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private WifiP2PActivity mActivity;
     private WifiP2pManager.PeerListListener myPeerListListener;
     private WifiP2pDevice device;
+    private WifiP2pDeviceList peers;
     Collection<WifiP2pDevice> devicelist;
     private WifiP2pConfig config = new WifiP2pConfig();
     ArrayList<Connection> connections;
@@ -73,7 +74,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         //j'appelle directement cette m�thode dans activity
     }
 
-
+    public WifiP2pDevice getDevice() {
+        return device;
+    }
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -99,7 +102,33 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             //TODO:nouveau
             if (mManager !=null) {
             //request peers va permettre de connaître les ports auxquels on PEUT se connecter, il s'appuie sur la liste des pairs disponibles
-                mManager.requestPeers(mChannel, myPeerListListener);
+                mManager.requestPeers(mChannel, new WifiP2pManager.PeerListListener() {
+
+
+                    public void onPeersAvailable(WifiP2pDeviceList peers) {
+                        Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
+                        Iterator it=peers.getDeviceList().iterator();
+                        WifiP2pDevice device= (WifiP2pDevice) it.next();
+                        WifiP2pConfig config= new WifiP2pConfig();
+                        config.deviceAddress=device.deviceAddress;
+                        mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+
+                            @Override
+                            public void onSuccess() {
+                                Log.v("NOUS", "succeed connection");
+                            }
+
+                            @Override
+                            public void onFailure(int reason) {
+                                Log.v("NOUS", "failed connection");
+                            }
+                        });
+
+                        // DO WHATEVER YOU WANT HERE
+                        // YOU CAN GET ACCESS TO ALL THE DEVICES YOU FOUND FROM peers OBJECT
+
+                    }
+                });
             }
             // Call WifiP2pManager.requestPeers() to get a list of current peers
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
@@ -174,9 +203,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers) {
+        Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
         //La liste des pairs valables sont les appareils qui cherchent à se connecter on doit les avoir dès le début.
         //cette méthode à ajouter les appareils disponibles aux connections.
-        devicelist = peers.getDeviceList();
+       /* devicelist = peers.getDeviceList();
         Iterator it = devicelist.iterator();
         Connection testcon = new Connection(ctx,mChannel,mManager,this,null);
 
@@ -189,12 +219,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 connections.add(con);
                 adapter.notifyDataSetChanged(); //remarque que la configuration a chang�
 
-            } /*else{
+            } */
+            /*else{
                 //si la connection existe
                 Connection c = connections.get(connections.indexOf(testcon));
                 adapter.notifyDataSetChanged();
             } */
-        }
+    //    }
 
 
     }

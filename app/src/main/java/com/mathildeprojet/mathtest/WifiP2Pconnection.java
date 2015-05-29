@@ -49,7 +49,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private WifiP2pManager mManager;
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
     private WifiP2PActivity mActivity;
-
     private WifiP2pManager.PeerListListener myPeerListListener;
     private WifiP2pDevice device;
     Collection<WifiP2pDevice> devicelist;
@@ -200,6 +199,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     }
 
+    //censer se connecter
     public void tryConnection(int position){
         Connection connection = null;
 

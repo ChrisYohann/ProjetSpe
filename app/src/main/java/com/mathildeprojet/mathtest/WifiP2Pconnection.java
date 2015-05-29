@@ -34,9 +34,8 @@ import java.util.Iterator;
 /**
  * Created by Rafaelle on 21/05/2015.
  */
-public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pManager.ActionListener, WifiP2pManager.ChannelListener,
-        WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener,
-        WifiP2pManager.PeerListListener {
+public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pManager.ChannelListener,
+        WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener {
 
     private Boolean discoveryOn=false;
 
@@ -150,7 +149,18 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     //trouve les pairs disponibles
     public void discoverPeers(){
-        mManager.discoverPeers((WifiP2pManager.Channel) mChannel, this);
+        mManager.discoverPeers((WifiP2pManager.Channel) mChannel, new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                Log.v("NOUS", "discovers peers marche");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.v("NOUS", "discovers peers ne marche pas");
+            }
+        });
     }
 
     //allow manager to discover peers and connect to other devices
@@ -161,7 +171,18 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     }
 
     public void closeConnections(){
-        mManager.removeGroup((WifiP2pManager.Channel) mChannel, this);
+        mManager.removeGroup((WifiP2pManager.Channel) mChannel,new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                Log.v("NOUS", "closeconnection marche");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.v("NOUS", "closeconnection ne marche pas");
+            }
+        });
         //TODO: ici j'ai remplacé connection par notre classe c'est possible que je me soit trompé !sorry
         //  Iterator<WifiP2Pconnection> it = connections.iterator();
         //  while(it.hasNext()){
@@ -174,17 +195,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     //stop trying to connect to other devices
     public void stopDiscovery(){ discoveryOn = false; }
 
-    //m�thode d�finit pour l'interface actionListener
-    @Override
-    public void onSuccess() {
-    }
-
-    //m�thode d�finit pour l'interface actionListener
-    @Override
-    public void onFailure(int reason) {
-        Log.v("NOUS", "on cherche de nouveau pairs");
-
-    }
 
     @Override
     public void onChannelDisconnected() {
@@ -200,57 +210,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onGroupInfoAvailable(WifiP2pGroup group) {
 
     }
-
-    @Override
-    public void onPeersAvailable(WifiP2pDeviceList peers) {
-        Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
-        //La liste des pairs valables sont les appareils qui cherchent à se connecter on doit les avoir dès le début.
-        //cette méthode à ajouter les appareils disponibles aux connections.
-       /* devicelist = peers.getDeviceList();
-        Iterator it = devicelist.iterator();
-        Connection testcon = new Connection(ctx,mChannel,mManager,this,null);
-
-        while (it.hasNext()) {
-            device = (WifiP2pDevice) it.next();
-            testcon.setDevice(device);
-
-            if(!connections.contains(testcon)){ //connnections � rajouter
-                Connection con = new Connection(ctx,mChannel,mManager,this,device);
-                connections.add(con);
-                adapter.notifyDataSetChanged(); //remarque que la configuration a chang�
-
-            } */
-            /*else{
-                //si la connection existe
-                Connection c = connections.get(connections.indexOf(testcon));
-                adapter.notifyDataSetChanged();
-            } */
-    //    }
-
-
-    }
-
-    //censer se connecter
-    public void tryConnection(int position){
-        Connection connection = null;
-
-        //make sure there's a connection object at given index
-        if(connections.get(position) == null)
-            return;
-
-        //check if we're already connected
-        //if so disconnect, else try connection to device
-        if(connections.get(position).isConnected){
-            connections.get(position).disconnect();
-        }else{
-            connection = connections.get(position);
-            config.deviceAddress = connection.dev.deviceAddress;
-            mManager.connect(mChannel, config,this);
-        }
-
-
-    }
-
 
 
 }

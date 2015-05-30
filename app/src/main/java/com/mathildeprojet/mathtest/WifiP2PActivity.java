@@ -101,17 +101,17 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     }
 
     public void onClick(View v) {
-        if(v == buttonConnect)
-        {
+        //if(v == buttonConnect)
+       // {
             //if (mReceiver.tryConnection(0)==null) {
               //  return
             //}
-            connect(device);//pour une paire
-        }
-        //else if(v == buttonFind)
-        //{
-        //    find();
+          //  connect(device);//pour une paire
         //}
+        /*else*/ if(v == buttonFind)
+        {
+            find();
+        }
 
     }
 

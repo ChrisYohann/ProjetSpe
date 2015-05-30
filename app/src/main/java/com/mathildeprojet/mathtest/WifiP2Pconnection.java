@@ -34,9 +34,10 @@ import java.util.Iterator;
 /**
  * Created by Rafaelle on 21/05/2015.
  */
-public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pManager.ActionListener, WifiP2pManager.ChannelListener,
-        WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener
-       /* WifiP2pManager.PeerListListener*/ {
+
+public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pManager.ChannelListener,
+        WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener {
+
 
     //private Boolean discoveryOn=false;
 
@@ -47,7 +48,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private WifiP2pManager mManager;
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
     private WifiP2PActivity mActivity;
-
     private WifiP2pManager.PeerListListener myPeerListListener;
     //private WifiP2pDevice device;
     private WifiP2pDeviceList peers;
@@ -146,7 +146,18 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     //trouve les pairs disponibles
     public void discoverPeers(){
-        mManager.discoverPeers((WifiP2pManager.Channel) mChannel, this);
+        mManager.discoverPeers((WifiP2pManager.Channel) mChannel, new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                Log.v("NOUS", "discovers peers marche");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.v("NOUS", "discovers peers ne marche pas");
+            }
+        });
     }
 
     /*
@@ -158,7 +169,18 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     }
     */
     public void closeConnections(){
-        mManager.removeGroup((WifiP2pManager.Channel) mChannel, this);
+        mManager.removeGroup((WifiP2pManager.Channel) mChannel,new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                Log.v("NOUS", "closeconnection marche");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.v("NOUS", "closeconnection ne marche pas");
+            }
+        });
         //TODO: ici j'ai remplacé connection par notre classe c'est possible que je me soit trompé !sorry
         //  Iterator<WifiP2Pconnection> it = connections.iterator();
         //  while(it.hasNext()){
@@ -170,8 +192,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     /*
     //stop trying to connect to other devices
     public void stopDiscovery(){ discoveryOn = false; }
+
     */
     //m�thode d�finit pour l'interface actionListener
+    /*
     @Override
     public void onSuccess() {
     }
@@ -181,7 +205,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onFailure(int reason) {
         Log.v("NOUS", "on cherche de nouveau pairs");
 
-    }
+    }*/
+
 
     @Override
     public void onChannelDisconnected() {
@@ -197,6 +222,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onGroupInfoAvailable(WifiP2pGroup group) {
 
     }
+
 
     /*
     @Override
@@ -252,6 +278,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
     //}
+
 
 
 

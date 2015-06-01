@@ -34,6 +34,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private WifiP2pManager mManager;
     private Button buttonFind;
     private Channel channel;
+    private WifiP2pDevice device;
     private Button buttonConnect;
     private WifiP2Pconnection mReceiver = null;
     private Context context;
@@ -46,7 +47,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("NOUS", "on rentre bien dans OnCreate");
         setContentView(R.layout.activity_wifi_p2_p);
         context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
@@ -56,16 +56,15 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         filtre.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         filtre.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         filtre.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        this.channel = (WifiP2pManager.Channel) mManager.initialize(context, looper, null);
-        //j'initialise la connection
+        this.channel = mManager.initialize(context, looper, null);
+        //initialisation de la connection
         mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
         registerReceiver(mReceiver, filtre);
 
-        this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
-        //TODO: cast OK ?
-        this.buttonConnect.setOnClickListener(this);
+       // this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
+        //this.buttonConnect.setOnClickListener(this);
         this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
-        this.buttonFind.setOnClickListener((View.OnClickListener) this);
+        this.buttonFind.setOnClickListener(this);
 
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
@@ -103,11 +102,22 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     @Override
     public void onClick(View v) {
+<<<<<<< HEAD
         if(v == buttonConnect)
         {
             //n'existe plus
         }
         else if(v == buttonFind)
+=======
+        //if(v == buttonConnect)
+       // {
+            //if (mReceiver.tryConnection(0)==null) {
+              //  return
+            //}
+          //  connect(device);//pour une paire
+        //}
+        /*else*/ if(v == buttonFind)
+>>>>>>> 57df05e8f5c40928143fa2b21536249e9075f841
         {
             find();
         }
@@ -117,7 +127,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
   /*  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mReceiver.tryConnection(position);
     }*/
-/*
+
     public void connect(WifiP2pDevice device)
     {
         WifiP2pConfig config = new WifiP2pConfig();
@@ -140,7 +150,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         {
             Toast.makeText(WifiP2PActivity.this, "Couldn't connect, device is not found", Toast.LENGTH_SHORT).show();
         }
-    }*/
+    }
 
     public void find()
     {
@@ -158,12 +168,27 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 });
     }
+<<<<<<< HEAD
 
 
    /* public void onPeersAvailable(WifiP2pDeviceList peers){
         mReceiver.onPeersAvailable(peers);
     } */
 
+=======
+    /*
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peers){
+        mReceiver.onPeersAvailable(peers);
+    }
+    */
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peerList) {
+        for (WifiP2pDevice device : peerList.getDeviceList()) {
+            this.device = device;
+            break;
+        } }
+>>>>>>> 57df05e8f5c40928143fa2b21536249e9075f841
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         String infoname = info.groupOwnerAddress.toString();

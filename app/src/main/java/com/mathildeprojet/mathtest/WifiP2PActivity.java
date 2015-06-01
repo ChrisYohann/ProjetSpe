@@ -30,7 +30,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,PeerListListener,ConnectionInfoListener {
+public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,ConnectionInfoListener {
     private WifiP2pManager mManager;
     private Button buttonFind;
     private Channel channel;
@@ -100,7 +100,15 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         mReceiver.closeConnections();
     }
 
+    @Override
     public void onClick(View v) {
+<<<<<<< HEAD
+        if(v == buttonConnect)
+        {
+            //n'existe plus
+        }
+        else if(v == buttonFind)
+=======
         //if(v == buttonConnect)
        // {
             //if (mReceiver.tryConnection(0)==null) {
@@ -109,6 +117,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
           //  connect(device);//pour une paire
         //}
         /*else*/ if(v == buttonFind)
+>>>>>>> 57df05e8f5c40928143fa2b21536249e9075f841
         {
             find();
         }
@@ -159,6 +168,14 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 });
     }
+<<<<<<< HEAD
+
+
+   /* public void onPeersAvailable(WifiP2pDeviceList peers){
+        mReceiver.onPeersAvailable(peers);
+    } */
+
+=======
     /*
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers){
@@ -171,6 +188,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
             this.device = device;
             break;
         } }
+>>>>>>> 57df05e8f5c40928143fa2b21536249e9075f841
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         String infoname = info.groupOwnerAddress.toString();
@@ -180,4 +198,5 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     public void onChannelDisconnected() {
 
     }
+
 }

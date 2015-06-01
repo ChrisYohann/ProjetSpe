@@ -109,19 +109,39 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                         Iterator it=peers.getDeviceList().iterator();
                         WifiP2pDevice device= (WifiP2pDevice) it.next();
                         WifiP2pConfig config= new WifiP2pConfig();
-                        config.deviceAddress=device.deviceAddress;
-                        mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+                        if (device.isGroupOwner()) {
+                            while (it.hasNext()) {
+                                Log.v("NOUS", "I am the master");
+                                config.deviceAddress = device.deviceAddress;
+                                mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
 
-                            @Override
-                            public void onSuccess() {
-                                Log.v("NOUS", "succeed connection");
-                            }
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.v("NOUS", "succeed connection");
+                                    }
 
-                            @Override
-                            public void onFailure(int reason) {
-                                Log.v("NOUS", "failed connection");
+                                    @Override
+                                    public void onFailure(int reason) {
+                                        Log.v("NOUS", "failed connection");
+                                    }
+                                });
                             }
-                        });
+                        }else {
+                            Log.v("NOUS", "Je suis un esclave!");
+                            config.deviceAddress = device.deviceAddress;
+                            mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+
+                                @Override
+                                public void onSuccess() {
+                                    Log.v("NOUS", "succeed connection");
+                                }
+
+                                @Override
+                                public void onFailure(int reason) {
+                                    Log.v("NOUS", "failed connection");
+                                }
+                            });
+                        }
 
                         // DO WHATEVER YOU WANT HERE
                         // YOU CAN GET ACCESS TO ALL THE DEVICES YOU FOUND FROM peers OBJECT

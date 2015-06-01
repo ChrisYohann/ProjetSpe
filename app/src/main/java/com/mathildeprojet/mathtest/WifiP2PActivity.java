@@ -30,7 +30,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,PeerListListener,ConnectionInfoListener {
+public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,ConnectionInfoListener {
     private WifiP2pManager mManager;
     private Button buttonFind;
     private Channel channel;
@@ -101,10 +101,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         mReceiver.closeConnections();
     }
 
+    @Override
     public void onClick(View v) {
         if(v == buttonConnect)
         {
-            mReceiver.tryConnection(1);//pour une paire
+            //n'existe plus
         }
         else if(v == buttonFind)
         {
@@ -158,10 +159,10 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 });
     }
 
-    @Override
-    public void onPeersAvailable(WifiP2pDeviceList peers){
+
+   /* public void onPeersAvailable(WifiP2pDeviceList peers){
         mReceiver.onPeersAvailable(peers);
-    }
+    } */
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -172,4 +173,5 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     public void onChannelDisconnected() {
 
     }
+
 }

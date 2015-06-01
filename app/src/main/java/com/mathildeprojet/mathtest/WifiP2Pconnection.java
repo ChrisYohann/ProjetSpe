@@ -27,6 +27,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -66,6 +67,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         this.mManager = manager;
         this.mActivity = activity; //pour relier � l'activit� principale
         adbldr = new AlertDialog.Builder(ctx);
+        InetAddress mstraddr;
     }
     /*
     public WifiP2pDevice getDevice() {
@@ -91,20 +93,21 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 // Wi-Fi P2P is not enabled
             }
             // Check to see if Wi-Fi is enabled and notify appropriate activity
-        } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-            Log.v("NOUS", "on a de nouveau pairs à rechercher");
-            //TODO:nouveau
-            if (mManager !=null) {
-            //request peers va permettre de connaître les ports auxquels on PEUT se connecter, il s'appuie sur la liste des pairs disponibles
+        } else {
+            if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+                Log.v("NOUS", "on a de nouveau pairs à rechercher");
+                //TODO:nouveau
+                if (mManager != null) {
+                    //request peers va permettre de connaître les ports auxquels on PEUT se connecter, il s'appuie sur la liste des pairs disponibles
 
-                mManager.requestPeers(mChannel, new WifiP2pManager.PeerListListener() {
+                    mManager.requestPeers(mChannel, new PeerListListener() {
 
 
-                    public void onPeersAvailable(WifiP2pDeviceList peers) {
-                        Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
-                        Iterator it=peers.getDeviceList().iterator();
-                        WifiP2pDevice device= (WifiP2pDevice) it.next();
-                        WifiP2pConfig config= new WifiP2pConfig();
+                        public void onPeersAvailable(WifiP2pDeviceList peers) {
+                            Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
+                            Iterator it = peers.getDeviceList().iterator();
+                            WifiP2pDevice device = (WifiP2pDevice) it.next();
+                            WifiP2pConfig config = new WifiP2pConfig();
                             while (it.hasNext()) {
                                 if (device.isGroupOwner()) {
                                     Log.v("NOUS", "I am the master");
@@ -126,28 +129,30 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                 });
                             }
 
-                        // DO WHATEVER YOU WANT HERE
-                        // YOU CAN GET ACCESS TO ALL THE DEVICES YOU FOUND FROM peers OBJECT
+                            // DO WHATEVER YOU WANT HERE
+                            // YOU CAN GET ACCESS TO ALL THE DEVICES YOU FOUND FROM peers OBJECT
 
-                    }
-                });
-
+                        }
+                    });
+                }
+                // Call WifiP2pManager.requestPeers() to get a list of current peers
+            } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
+                Log.v("NOUS", "repondre à une nouvelle co ou se deco");
+                //TODO:nouveau
+                if (mManager == null) {
+                    return;
+                }
+                NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+                if (networkInfo.isConnected()) {
+                    //TODO: cast ?
+                    mManager.requestConnectionInfo(mChannel, mActivity);
+                } else {//c'est deconnecté
+                }
+                // Respond to new connection or disconnections
+            } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
+                Log.v("NOUS", "dire que notre etat de co change");
+                // Respond to this device's wifi state changing
             }
-            // Call WifiP2pManager.requestPeers() to get a list of current peers
-        } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-            Log.v("NOUS", "repondre à une nouvelle co ou se deco");
-            //TODO:nouveau
-            if (mManager ==null) {return;}
-            NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-            if (networkInfo.isConnected()) {
-                //TODO: cast ?
-                mManager.requestConnectionInfo(mChannel, mActivity);
-            }else {//c'est deconnecté
-            }
-            // Respond to new connection or disconnections
-        } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-            Log.v("NOUS", "dire que notre etat de co change");
-            // Respond to this device's wifi state changing
         }
     }
 

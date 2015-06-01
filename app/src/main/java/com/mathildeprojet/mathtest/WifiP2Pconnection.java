@@ -4,11 +4,16 @@ package com.mathildeprojet.mathtest;
  * Created by matylde on 28/05/2015.
  */
 import android.annotation.TargetApi;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.FileOutputStream;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.content.IntentFilter;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -77,6 +82,16 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
+        WifiManager wifiMan = (WifiManager) ctx.getSystemService(
+                Context.WIFI_SERVICE);
+    	WifiInfo wifiInf = wifiMan.getConnectionInfo();
+    	String myMAC = wifiInf.getMacAddress();
+    	if(myMAC != null){
+
+			Log.d("NOUS", "l'adresse mac est :" + myMAC );
+
+		}
+
         Log.v("NOUS", "on rentre bien dans OnReceive");
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
             Log.v("NOUS", "l'etat de la wifi est changé");
@@ -90,6 +105,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             } else {            Log.v("NOUS", "l'etat de la wifi est pas ok");
                 //TODO:nouveau
                 Toast.makeText(mActivity, "wifi direct is disabled",Toast.LENGTH_LONG).show();
+
                 // Wi-Fi P2P is not enabled
             }
             // Check to see if Wi-Fi is enabled and notify appropriate activity
@@ -156,6 +172,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         }
     }
 
+
     //trouve les pairs disponibles
     public void discoverPeers(){
         mManager.discoverPeers((WifiP2pManager.Channel) mChannel, new WifiP2pManager.ActionListener() {
@@ -206,7 +223,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
 
-
-
+    
 
 }

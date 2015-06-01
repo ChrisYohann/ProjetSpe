@@ -62,6 +62,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     ArrayList<Connection> connections;
     ArrayAdapter<Connection> adapter;
     String deviceAddress;
+    View view;
 
     //TODO: remplacer le TextView connecte par WifiP2PActivity activity !
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Channel channel,
@@ -72,7 +73,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         this.mManager = manager;
         this.mActivity = activity; //pour relier � l'activit� principale
         adbldr = new AlertDialog.Builder(ctx);
-        InetAddress mstraddr;
     }
     /*
     public WifiP2pDevice getDevice() {
@@ -169,6 +169,12 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 Log.v("NOUS", "dire que notre etat de co change");
                 // Respond to this device's wifi state changing
             }
+        }
+        Log.v("NOUS","gros mega test");
+        try {
+            FileServerAsyncTask servsocket = new FileServerAsyncTask(context, view);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

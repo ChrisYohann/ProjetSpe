@@ -102,23 +102,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     @Override
     public void onClick(View v) {
-<<<<<<< HEAD
         if(v == buttonConnect)
         {
             //n'existe plus
         }
-        else if(v == buttonFind)
-=======
-        //if(v == buttonConnect)
-       // {
-            //if (mReceiver.tryConnection(0)==null) {
-              //  return
-            //}
-          //  connect(device);//pour une paire
-        //}
-        /*else*/ if(v == buttonFind)
->>>>>>> 57df05e8f5c40928143fa2b21536249e9075f841
-        {
+        else if(v == buttonFind) {
             find();
         }
 
@@ -168,27 +156,20 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 });
     }
-<<<<<<< HEAD
 
 
-   /* public void onPeersAvailable(WifiP2pDeviceList peers){
-        mReceiver.onPeersAvailable(peers);
-    } */
-
-=======
     /*
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers){
         mReceiver.onPeersAvailable(peers);
     }
-    */
+    *//*
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peerList) {
         for (WifiP2pDevice device : peerList.getDeviceList()) {
             this.device = device;
             break;
-        } }
->>>>>>> 57df05e8f5c40928143fa2b21536249e9075f841
+        } }*/
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         String infoname = info.groupOwnerAddress.toString();

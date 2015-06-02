@@ -39,7 +39,6 @@ import android.content.IntentFilter;
         import java.io.OutputStream;
         import        java.io.FilterOutputStream;
         import      java.io.DataOutputStream;
-
         import java.io.InputStream;
         import  java.io.FilterInputStream;
         import java.io.DataInputStream;
@@ -120,6 +119,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         else if(v == buttonFind)
         {
             find();
+
         }
 
     }
@@ -169,7 +169,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 });
     }
 
-
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         String infoname = info.groupOwnerAddress.toString();
@@ -211,10 +210,12 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
             dOut.flush();
 
             dOut.close();
+
         } catch (IOException e) {
             Log.d("NOUS", e.getMessage());
             ;
         }
+
     }
 
     public void receiveSocket() {

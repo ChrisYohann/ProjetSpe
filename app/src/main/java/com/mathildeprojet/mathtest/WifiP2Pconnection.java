@@ -66,7 +66,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     //TODO: remplacer le TextView connecte par WifiP2PActivity activity !
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Channel channel,
-                             WifiP2PActivity activity) {
+                             WifiP2PActivity activity){
         super();
         this.ctx=ctxt;
         this.mChannel=channel;
@@ -84,13 +84,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
         WifiManager wifiMan = (WifiManager) ctx.getSystemService(
                 Context.WIFI_SERVICE);
-    	WifiInfo wifiInf = wifiMan.getConnectionInfo();
-    	String myMAC = wifiInf.getMacAddress();
-    	if(myMAC != null){
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        String myMAC = wifiInf.getMacAddress();
+        if (myMAC != null) {
 
-			Log.d("NOUS", "l'adresse mac est :" + myMAC );
+            Log.d("NOUS", "l'adresse mac est :" + myMAC);
 
-		}
+        }
 
         Log.v("NOUS", "on rentre bien dans OnReceive");
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
@@ -99,12 +99,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 Log.v("NOUS", "l'etat de la wifi est ok");
                 //TODO: ajout en dernier
-                Toast.makeText(mActivity,"Wifi direct is enabled",Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity, "Wifi direct is enabled", Toast.LENGTH_LONG).show();
 
                 // Wifi P2P is enabled
-            } else {            Log.v("NOUS", "l'etat de la wifi est pas ok");
+            } else {
+                Log.v("NOUS", "l'etat de la wifi est pas ok");
                 //TODO:nouveau
-                Toast.makeText(mActivity, "wifi direct is disabled",Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity, "wifi direct is disabled", Toast.LENGTH_LONG).show();
 
                 // Wi-Fi P2P is not enabled
             }
@@ -116,20 +117,22 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 if (mManager != null) {
                     //request peers va permettre de connaître les ports auxquels on PEUT se connecter, il s'appuie sur la liste des pairs disponibles
 
-                    mManager.requestPeers(mChannel, new PeerListListener() {
 
+                    mManager.requestPeers(mChannel, new PeerListListener() {
 
                         public void onPeersAvailable(WifiP2pDeviceList peers) {
                             Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
                             Iterator it = peers.getDeviceList().iterator();
-                            WifiP2pDevice device = (WifiP2pDevice) it.next();
                             WifiP2pConfig config = new WifiP2pConfig();
+
                             while (it.hasNext()) {
+                                WifiP2pDevice device = (WifiP2pDevice) it.next();
                                 if (device.isGroupOwner()) {
-                                    Log.v("NOUS", "I am the master");
+                                    Log.v("NOUS", "fuck, I am the master");
                                 } else {
                                     Log.v("NOUS", "Je suis un esclave!");
                                 }
+
                                 config.deviceAddress = device.deviceAddress;
                                 mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
 
@@ -169,12 +172,14 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 Log.v("NOUS", "dire que notre etat de co change");
                 // Respond to this device's wifi state changing
             }
-        }
-        Log.v("NOUS","gros mega test");
-        try {
-            FileServerAsyncTask servsocket = new FileServerAsyncTask(context, view);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            Log.v("NOUS", "test data");
+            try {
+                FileServerAsyncTask servsocket = new FileServerAsyncTask(context, view);
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            }
         }
     }
 
@@ -226,9 +231,5 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onGroupInfoAvailable(WifiP2pGroup group) {
 
     }
-
-
-
-    
 
 }

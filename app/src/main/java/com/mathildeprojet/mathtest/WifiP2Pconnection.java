@@ -68,6 +68,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private WifiP2pManager.PeerListListener myPeerListListener;
     //private WifiP2pDevice device;
     private WifiP2pDeviceList peers;
+    private WifiInfo info;
     Collection<WifiP2pDevice> devicelist;
     private WifiP2pConfig config = new WifiP2pConfig();
     ArrayList<Connection> connections;
@@ -96,6 +97,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 Context.WIFI_SERVICE);
     	WifiInfo wifiInf = wifiMan.getConnectionInfo();
     	String myMAC = wifiInf.getMacAddress();
+        info = wifiInf;
     	if(myMAC != null){
 
 			Log.d("NOUS", "l'adresse mac est :" + myMAC );
@@ -147,6 +149,57 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                     @Override
                                     public void onSuccess() {
                                         Log.v("NOUS", "succeed connection");
+                                        mManager.requestConnectionInfo(mChannel, new WifiP2pManager.ConnectionInfoListener() {
+                                            @Override
+                                            public void onConnectionInfoAvailable(WifiP2pInfo info) {
+                                                Log.v("NOUS","Bonjour et bienvenue conconnection");
+                                                if(info.isGroupOwner){
+
+                                                    Log.v("NOUS","Maitre ( onconnection)");
+                                                    //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
+                                                    Serveuur serv = new Serveuur();
+                                                    serv.setIP( info.groupOwnerAddress.getHostAddress());
+                                                    serv.execute();
+
+                                                }else{
+                                                    Log.v("NOUS","Esclave ( onconnection)");
+                                                    //give server a second to setup the server socket
+                                                    try{
+                                                        Thread.sleep(1000);
+                                                    }catch (Exception e){
+                                                        System.out.println(e.toString());
+                                                    }
+
+                                                    String myIP = "";
+                                                    try {
+                                                        Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+                                                        while(en.hasMoreElements()){
+                                                            NetworkInterface ni = en.nextElement();
+                                                            Enumeration<InetAddress> en2 = ni.getInetAddresses();
+                                                            while(en2.hasMoreElements()){
+                                                                InetAddress inet = en2.nextElement();
+                                                                if(!inet.isLoopbackAddress() && inet instanceof Inet4Address){
+                                                                    myIP = inet.getHostAddress();
+                                                                }
+                                                            }
+                                                        }
+                                                    } catch (SocketException e) {
+                                                        // TODO Auto-generated catch block
+                                                        e.printStackTrace();
+                                                    }
+
+
+
+                                                    //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
+                                                    Client client = new Client();
+                                                    client.setIPserv(info.groupOwnerAddress.getHostAddress());
+                                                    client.execute();
+
+                                                }
+
+                                            }
+                                        });
+
                                     }
 
                                     @Override

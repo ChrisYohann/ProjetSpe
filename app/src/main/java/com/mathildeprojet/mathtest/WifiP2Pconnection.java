@@ -184,13 +184,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 // Respond to this device's wifi state changing
             }
 
-            Log.v("NOUS", "test data");
-            try {
-                FileServerAsyncTask servsocket = new FileServerAsyncTask(context, view);
-            } catch (IOException e) {
-                e.printStackTrace();
-
-            }
         }
     }
 
@@ -396,5 +389,5 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
         }
     }
-    
+
 }

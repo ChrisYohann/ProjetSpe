@@ -57,7 +57,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private View view;
     WifiP2pDeviceList peers;
     private IntentFilter filtre = new IntentFilter();
-    private FileServerAsyncTask servsocket;
+
 
 
     @Override
@@ -80,15 +80,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //this.buttonConnect.setOnClickListener(this);
         this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
         this.buttonFind.setOnClickListener(this);
-<<<<<<< HEAD
-
-=======
         this.buttonsocket = (Button) this.findViewById(R.id.buttonsocket);
         this.buttonsocket.setOnClickListener(this);
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
->>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
     }
 
     /* register the broadcast receiver with the intent values to be matched */
@@ -182,21 +178,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 });
     }
-<<<<<<< HEAD
-=======
-    /*
-    @Override
-    public void onPeersAvailable(WifiP2pDeviceList peers){
-        mReceiver.onPeersAvailable(peers);
-    }
-    *//*
-    @Override
-    public void onPeersAvailable(WifiP2pDeviceList peerList) {
-        for (WifiP2pDevice device : peerList.getDeviceList()) {
-            this.device = device;
-            break;
-        } }*/
->>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
+
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -209,15 +191,9 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     }
 
 
-<<<<<<< HEAD
-            dOut.close();
 
-        } catch (IOException e) {
-            Log.d("NOUS", e.getMessage());
-            ;
-        }
 
-    }
+
 
     public void receiveSocket() {
 
@@ -260,6 +236,5 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     }
 
-=======
->>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
+
 }

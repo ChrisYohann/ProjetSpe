@@ -5,6 +5,10 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
+
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -28,11 +32,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
+import 	java.net.InetSocketAddress;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.io.OutputStream;
+import        java.io.FilterOutputStream;
+  import      java.io.DataOutputStream;
+
+import java.io.InputStream;
+        import  java.io.FilterInputStream;
+        import java.io.DataInputStream;
 
 
 public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,ConnectionInfoListener {
     private WifiP2pManager mManager;
     private Button buttonFind;
+    private Button buttonsocket;
     private Channel channel;
     private WifiP2pDevice device;
     private Button buttonConnect;
@@ -65,7 +81,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //this.buttonConnect.setOnClickListener(this);
         this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
         this.buttonFind.setOnClickListener(this);
-
+        this.buttonsocket = (Button) this.findViewById(R.id.buttonsocket);
+        this.buttonsocket.setOnClickListener(this);
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
@@ -102,12 +119,27 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     @Override
     public void onClick(View v) {
+
         if(v == buttonConnect)
         {
             //n'existe plus
         }
-        else if(v == buttonFind) {
+        else if(v == buttonFind)
+
+        //if(v == buttonConnect)
+       // {
+            //if (mReceiver.tryConnection(0)==null) {
+              //  return
+            //}
+          //  connect(device);//pour une paire
+        //}
+        /*else*/{
             find();
+
+        }
+        else if(v==buttonsocket) {
+
+
         }
 
     }
@@ -156,8 +188,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 });
     }
-
-
     /*
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers){
@@ -170,6 +200,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
             this.device = device;
             break;
         } }*/
+
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         String infoname = info.groupOwnerAddress.toString();
@@ -179,5 +210,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     public void onChannelDisconnected() {
 
     }
+
 
 }

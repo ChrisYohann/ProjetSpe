@@ -18,6 +18,13 @@
         android:layout_centerInParent="true"
         android:textColor="#01D758">
     </Button>
+    <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Socket"
+        android:layout_below="@+id/buttonFind"
+        android:id="@+id/buttonsocket"
+        android:layout_centerInParent="true">
+    </Button>
 
 
 

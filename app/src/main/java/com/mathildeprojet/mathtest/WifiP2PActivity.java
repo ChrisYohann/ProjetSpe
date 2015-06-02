@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -47,6 +48,7 @@ import java.io.InputStream;
 public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,ConnectionInfoListener {
     private WifiP2pManager mManager;
     private Button buttonFind;
+    private Button buttonsocket;
     private Channel channel;
     private WifiP2pDevice device;
     private Button buttonConnect;
@@ -79,7 +81,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //this.buttonConnect.setOnClickListener(this);
         this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
         this.buttonFind.setOnClickListener(this);
-
+        this.buttonsocket = (Button) this.findViewById(R.id.buttonsocket);
+        this.buttonsocket.setOnClickListener(this);
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
@@ -132,6 +135,10 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //}
         /*else*/{
             find();
+
+        }
+        else if(v==buttonsocket) {
+
 
         }
 
@@ -199,81 +206,5 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     }
 
-    public void createSocket() {
-        try {
-            /**
-             * Create a server socket and wait for client connections. This
-             * call blocks until a connection is accepted from a client
-             */
-            ServerSocket serverSocket = new ServerSocket(5353);
-            Socket client = serverSocket.accept();
-            DataOutputStream dOut = new DataOutputStream(client.getOutputStream());
 
-// Send first message
-            dOut.writeByte(1);
-            dOut.writeUTF("This is the first type of message.");
-            dOut.flush(); // Send off the data
-
-// Send the second message
-            dOut.writeByte(2);
-            dOut.writeUTF("This is the second type of message.");
-            dOut.flush(); // Send off the data
-
-// Send the third message
-            dOut.writeByte(3);
-            dOut.writeUTF("This is the third type of message (Part 1).");
-            dOut.writeUTF("This is the third type of message (Part 2).");
-            dOut.flush(); // Send off the data
-
-// Send the exit message
-            dOut.writeByte(-1);
-            dOut.flush();
-
-            dOut.close();
-    } catch (IOException e) {
-        Log.d("NOUS", e.getMessage());
-        ;
-    }
-    }
-
-    public void receiveSocket() {
-
-        WifiManager wifiMan = (WifiManager) context.getSystemService(
-                Context.WIFI_SERVICE);
-        WifiInfo wifiInf = wifiMan.getConnectionInfo();
-        String myMAC = wifiInf.getMacAddress();
-
-        Socket socket = new Socket();
-        try {
-            socket.bind(null);
-            socket.connect((new InetSocketAddress(myMAC, 5353)), 500);
-
-            DataInputStream dIn = new DataInputStream(socket.getInputStream());
-
-            boolean done = false;
-            while (!done) {
-                byte messageType = dIn.readByte();
-
-                switch (messageType) {
-                    case 1: // Type A
-                        Log.v("Nous ", "Message A :" + dIn.readUTF());
-                        break;
-                    case 2: // Type B
-                        Log.v("Nous ", "Message B :" + dIn.readUTF());
-                        break;
-                    case 3: // Type C
-                        Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
-                        Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
-                        break;
-
-                }
-            }
-
-            dIn.close();
-        } catch (IOException e) {
-            Log.d("NOUS", e.getMessage());
-            ;
-        }
-
-    }
 }

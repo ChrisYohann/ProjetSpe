@@ -4,6 +4,9 @@ package com.mathildeprojet.mathtest;
  * Created by matylde on 28/05/2015.
  */
 import android.annotation.TargetApi;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileOutputStream;
@@ -22,6 +25,7 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
+import android.os.AsyncTask;
 import android.view.View;
 import android.widget.Toast;
 import android.app.AlertDialog;
@@ -33,9 +37,16 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Inet4Address;
+import java.net.ServerSocket;
+import java.net.Socket;
+import 	java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 
 /**
  * Created by Rafaelle on 21/05/2015.
@@ -190,7 +201,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     }
 
     public void closeConnections(){
-        mManager.removeGroup((WifiP2pManager.Channel) mChannel,new WifiP2pManager.ActionListener() {
+        mManager.removeGroup((WifiP2pManager.Channel) mChannel, new WifiP2pManager.ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -213,7 +224,49 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
-        String infoname = info.groupOwnerAddress.toString();
+        if(info.isGroupOwner){
+
+
+            //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
+            Serveuur serv = new Serveuur();
+            serv.setIP( info.groupOwnerAddress.getHostAddress());
+            serv.execute();
+
+        }else{
+
+            //give server a second to setup the server socket
+            try{
+                Thread.sleep(1000);
+            }catch (Exception e){
+                System.out.println(e.toString());
+            }
+
+            String myIP = "";
+            try {
+                Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+                while(en.hasMoreElements()){
+                    NetworkInterface ni = en.nextElement();
+                    Enumeration<InetAddress> en2 = ni.getInetAddresses();
+                    while(en2.hasMoreElements()){
+                        InetAddress inet = en2.nextElement();
+                        if(!inet.isLoopbackAddress() && inet instanceof Inet4Address){
+                            myIP = inet.getHostAddress();
+                        }
+                    }
+                }
+            } catch (SocketException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+
+
+            //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
+            Client client = new Client();
+            client.setIPserv(info.groupOwnerAddress.getHostAddress());
+            client.execute();
+
+        }
     }
 
     @Override
@@ -222,7 +275,116 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     }
 
 
+    public class Serveuur extends AsyncTask<Void, Void, String> {
 
+
+
+        String IP;
+
+
+        public void setIP(String ip) {
+            IP=ip;
+        }
+
+
+        public String doInBackground(Void...params) {
+
+            Log.v("NOUS", "Bonjour socket");
+            try {
+                Log.v("NOUS", "Bonjour socket 2");
+                /**
+                 * Create a server socket and wait for client connections. This
+                 * call blocks until a connection is accepted from a client
+                 */
+                ServerSocket serverSocket = new ServerSocket(5353);
+                Log.v("NOUS", "Bonjour socket 3");
+                serverSocket.bind(new InetSocketAddress(IP,5353));
+                Socket client = serverSocket.accept();
+                Log.v("NOUS", "socket créée avec succès");
+                DataOutputStream dOut = new DataOutputStream(client.getOutputStream());
+
+// Send first message
+                dOut.writeByte(1);
+                dOut.writeUTF("This is the first type of message.");
+                dOut.flush(); // Send off the data
+
+// Send the second message
+                dOut.writeByte(2);
+                dOut.writeUTF("This is the second type of message.");
+                dOut.flush(); // Send off the data
+
+// Send the third message
+                dOut.writeByte(3);
+                dOut.writeUTF("This is the third type of message (Part 1).");
+                dOut.writeUTF("This is the third type of message (Part 2).");
+                dOut.flush(); // Send off the data
+
+// Send the exit message
+                dOut.writeByte(-1);
+                dOut.flush();
+
+                dOut.close();
+
+                client.close();
+                serverSocket.close();
+
+                return "reussi" ;
+            } catch (IOException e) {
+                Log.d("NOUS", e.getMessage());
+
+            }
+            return null;
+        }
+    }
+
+    public class Client extends AsyncTask<Void, Void, String> {
+
+
+        String IPserv;
+
+        public void setIPserv(String IP) {
+            IPserv = IP;
+        }
+
+        public String doInBackground(Void... params) {
+
+            Socket socket = new Socket();
+
+            try {
+                socket.bind(null);
+                socket.connect((new InetSocketAddress(IPserv, 5353)), 0);
+
+                DataInputStream dIn = new DataInputStream(socket.getInputStream());
+
+                boolean done = false;
+                while (!done) {
+                    byte messageType = dIn.readByte();
+
+                    switch (messageType) {
+                        case 1: // Type A
+                            Log.v("Nous ", "Message A :" + dIn.readUTF());
+                            break;
+                        case 2: // Type B
+                            Log.v("Nous ", "Message B :" + dIn.readUTF());
+                            break;
+                        case 3: // Type C
+                            Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
+                            Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
+                            break;
+
+                    }
+                }
+
+                dIn.close();
+            } catch (IOException e) {
+                Log.d("NOUS", e.getMessage());
+                ;
+            }
+
+            return IPserv;
+
+        }
+    }
     
 
 }

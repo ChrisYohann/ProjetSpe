@@ -15,6 +15,13 @@
         android:id="@+id/buttonFind"
         android:layout_centerInParent="true">
     </Button>
+    <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Socket"
+        android:layout_below="@+id/buttonFind"
+        android:id="@+id/buttonsocket"
+        android:layout_centerInParent="true">
+    </Button>
 
 
 

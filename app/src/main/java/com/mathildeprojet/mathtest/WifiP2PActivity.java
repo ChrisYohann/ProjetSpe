@@ -1,46 +1,46 @@
 package com.mathildeprojet.mathtest;
 
 import android.content.BroadcastReceiver;
-import android.app.Activity;
-import android.app.ListActivity;
-import android.content.Context;
+        import android.app.Activity;
+        import android.app.ListActivity;
+        import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pInfo;
-import android.os.Looper;
-import android.net.wifi.p2p.WifiP2pManager.Channel;
-import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
-import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
-import android.view.View.OnClickListener;
-import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.WifiP2pManager.ActionListener;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.util.Log;
-import android.widget.Toast;
-import 	java.net.InetSocketAddress;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.io.OutputStream;
-import        java.io.FilterOutputStream;
-  import      java.io.DataOutputStream;
-
-import java.io.InputStream;
+        import android.net.wifi.WifiInfo;
+        import android.net.wifi.WifiManager;
+        import android.net.wifi.p2p.WifiP2pConfig;
+        import android.net.wifi.p2p.WifiP2pDevice;
+        import android.net.wifi.p2p.WifiP2pDeviceList;
+        import android.net.wifi.p2p.WifiP2pInfo;
+        import android.os.Looper;
+        import android.net.wifi.p2p.WifiP2pManager.Channel;
+        import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+        import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
+        import android.view.View.OnClickListener;
+        import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
+        import android.support.v7.app.ActionBarActivity;
+        import android.os.Bundle;
+        import android.net.wifi.p2p.WifiP2pManager;
+        import android.net.wifi.p2p.WifiP2pManager.ActionListener;
+        import android.view.View;
+        import android.widget.AdapterView;
+        import android.widget.Button;
+        import android.view.Menu;
+        import android.view.MenuItem;
+        import android.widget.ListView;
+        import android.widget.TextView;
+        import android.util.Log;
+        import android.widget.Toast;
+        import 	java.net.InetSocketAddress;
+        import java.io.IOException;
+        import java.net.ServerSocket;
+        import java.net.Socket;
+        import java.io.OutputStream;
+        import        java.io.FilterOutputStream;
+        import      java.io.DataOutputStream;
+        import java.io.InputStream;
         import  java.io.FilterInputStream;
         import java.io.DataInputStream;
 
@@ -54,10 +54,10 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private Button buttonConnect;
     private WifiP2Pconnection mReceiver = null;
     private Context context;
-    private TextView blabla;
+    private View view;
     WifiP2pDeviceList peers;
     private IntentFilter filtre = new IntentFilter();
-    ListView peerlist;
+    private FileServerAsyncTask servsocket;
 
 
     @Override
@@ -74,18 +74,21 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         filtre.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         this.channel = mManager.initialize(context, looper, null);
         //initialisation de la connection
-        mReceiver=new WifiP2Pconnection(context,mManager,channel,this);
         registerReceiver(mReceiver, filtre);
-
+        mReceiver=new WifiP2Pconnection(context, mManager,channel,this);
        // this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
         //this.buttonConnect.setOnClickListener(this);
         this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
         this.buttonFind.setOnClickListener(this);
+<<<<<<< HEAD
+
+=======
         this.buttonsocket = (Button) this.findViewById(R.id.buttonsocket);
         this.buttonsocket.setOnClickListener(this);
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
+>>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
     }
 
     /* register the broadcast receiver with the intent values to be matched */
@@ -119,21 +122,12 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     @Override
     public void onClick(View v) {
-
         if(v == buttonConnect)
         {
             //n'existe plus
         }
         else if(v == buttonFind)
-
-        //if(v == buttonConnect)
-       // {
-            //if (mReceiver.tryConnection(0)==null) {
-              //  return
-            //}
-          //  connect(device);//pour une paire
-        //}
-        /*else*/{
+        {
             find();
 
         }
@@ -188,13 +182,21 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 });
     }
-
-
-
-   /* public void onPeersAvailable(WifiP2pDeviceList peers){
+<<<<<<< HEAD
+=======
+    /*
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peers){
         mReceiver.onPeersAvailable(peers);
-    } */
-
+    }
+    *//*
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peerList) {
+        for (WifiP2pDevice device : peerList.getDeviceList()) {
+            this.device = device;
+            break;
+        } }*/
+>>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -207,4 +209,57 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     }
 
 
+<<<<<<< HEAD
+            dOut.close();
+
+        } catch (IOException e) {
+            Log.d("NOUS", e.getMessage());
+            ;
+        }
+
+    }
+
+    public void receiveSocket() {
+
+        WifiManager wifiMan = (WifiManager) context.getSystemService(
+                Context.WIFI_SERVICE);
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        String myMAC = wifiInf.getMacAddress();
+
+        Socket socket = new Socket();
+        try {
+            socket.bind(null);
+            socket.connect((new InetSocketAddress(myMAC, 5353)), 500);
+
+            DataInputStream dIn = new DataInputStream(socket.getInputStream());
+
+            boolean done = false;
+            while (!done) {
+                byte messageType = dIn.readByte();
+
+                switch (messageType) {
+                    case 1: // Type A
+                        Log.v("Nous ", "Message A :" + dIn.readUTF());
+                        break;
+                    case 2: // Type B
+                        Log.v("Nous ", "Message B :" + dIn.readUTF());
+                        break;
+                    case 3: // Type C
+                        Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
+                        Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
+                        break;
+
+                }
+            }
+
+            dIn.close();
+        } catch (IOException e) {
+            Log.d("NOUS", e.getMessage());
+            ;
+        }
+
+    }
+
+=======
+>>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
 }

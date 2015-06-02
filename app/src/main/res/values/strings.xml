@@ -6,4 +6,6 @@
     <string name="bienvenue">Bienvenue sur NotreSuperAppli, pour vous connecter à un appareil à proximité veuillez appuyer sur Find Peers</string>
     <string name="Find">Find Peers</string>
     <string name="Connect">Connect</string>
+    <string name="ChatOn">ChatOn</string>
+
 </resources>

@@ -179,7 +179,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 });
     }
 
-
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         String infoname = info.groupOwnerAddress.toString();
@@ -189,9 +188,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     public void onChannelDisconnected() {
 
     }
-
-
-
 
 
 

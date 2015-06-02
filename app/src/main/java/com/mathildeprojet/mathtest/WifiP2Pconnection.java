@@ -372,7 +372,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 ServerSocket serverSocket = new ServerSocket(5353);
                 serverSocket.setReuseAddress(true);
                 Log.v("NOUS", "Bonjour socket 3");
-                serverSocket.bind(new InetSocketAddress(IP,5353));
+                //serverSocket.bind(null);
+                Log.v("NOUS", "Bonjour socket 4");
                 Socket client = serverSocket.accept();
                 Log.v("NOUS", "socket créée avec succès");
                 DataOutputStream dOut = new DataOutputStream(client.getOutputStream());

@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
         import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 
         import android.net.wifi.WifiInfo;
         import android.net.wifi.WifiManager;
@@ -47,6 +48,7 @@ import android.content.IntentFilter;
 public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,ConnectionInfoListener {
     private WifiP2pManager mManager;
     private Button buttonFind;
+    private Button buttonsocket;
     private Channel channel;
     private WifiP2pDevice device;
     private Button buttonConnect;
@@ -78,7 +80,15 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //this.buttonConnect.setOnClickListener(this);
         this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
         this.buttonFind.setOnClickListener(this);
+<<<<<<< HEAD
 
+=======
+        this.buttonsocket = (Button) this.findViewById(R.id.buttonsocket);
+        this.buttonsocket.setOnClickListener(this);
+        //peerlist = (ListView)findViewById(R.id.peer_list);
+        //peerlist.setAdapter(wifiConnection.adapter);
+        //peerlist.setOnItemClickListener(this);
+>>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
     }
 
     /* register the broadcast receiver with the intent values to be matched */
@@ -119,6 +129,10 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         else if(v == buttonFind)
         {
             find();
+
+        }
+        else if(v==buttonsocket) {
+
 
         }
 
@@ -168,6 +182,21 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 });
     }
+<<<<<<< HEAD
+=======
+    /*
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peers){
+        mReceiver.onPeersAvailable(peers);
+    }
+    *//*
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peerList) {
+        for (WifiP2pDevice device : peerList.getDeviceList()) {
+            this.device = device;
+            break;
+        } }*/
+>>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -179,36 +208,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     }
 
-    public void createSocket() {
-        try {
-            /**
-             * Create a server socket and wait for client connections. This
-             * call blocks until a connection is accepted from a client
-             */
-            ServerSocket serverSocket = new ServerSocket(5353);
-            Socket client = serverSocket.accept();
-            DataOutputStream dOut = new DataOutputStream(client.getOutputStream());
 
-// Send first message
-            dOut.writeByte(1);
-            dOut.writeUTF("This is the first type of message.");
-            dOut.flush(); // Send off the data
-
-// Send the second message
-            dOut.writeByte(2);
-            dOut.writeUTF("This is the second type of message.");
-            dOut.flush(); // Send off the data
-
-// Send the third message
-            dOut.writeByte(3);
-            dOut.writeUTF("This is the third type of message (Part 1).");
-            dOut.writeUTF("This is the third type of message (Part 2).");
-            dOut.flush(); // Send off the data
-
-// Send the exit message
-            dOut.writeByte(-1);
-            dOut.flush();
-
+<<<<<<< HEAD
             dOut.close();
 
         } catch (IOException e) {
@@ -259,4 +260,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     }
 
+=======
+>>>>>>> 7d85921f77f6b3fe3b3900dcd225ef94399594b6
 }

@@ -42,6 +42,7 @@ import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import 	java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -62,8 +63,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private Looper lpr;
     AlertDialog.Builder adbldr;
     public boolean onetime=true;
-    public int Port;
-    public InetAddress adrr;
 
     private WifiP2pManager mManager;
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
@@ -175,7 +174,12 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                                             Log.v("NOUS", "Etablissement connexion du maître)");
                                             //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
-                                            Serveuur serv = new Serveuur(info.groupOwnerAddress.toString());
+                                            Serveuur serv = null;
+                                            try {
+                                                serv = new Serveuur(info.groupOwnerAddress.toString());
+                                            } catch (UnknownHostException e) {
+                                                e.printStackTrace();
+                                            }
                                             serv.setIP(info.groupOwnerAddress.toString());
                                             serv.execute();
 
@@ -304,7 +308,12 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
             //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
-            Serveuur serv = new Serveuur(info.groupOwnerAddress.toString());
+            Serveuur serv = null;
+            try {
+                serv = new Serveuur(info.groupOwnerAddress.toString());
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
             serv.setIP(info.groupOwnerAddress.toString());
             serv.execute();
 
@@ -356,9 +365,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
         String IP;
+        InetAddress servaddr;
 
-        public Serveuur(String seerv) {
+        public Serveuur(String seerv) throws UnknownHostException {
             IP=seerv;
+            servaddr=InetAddress.getByName(seerv);
         }
 
         public void setIP(String ip) {
@@ -376,10 +387,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                  * Create a server socket and wait for client connections. This
                  * call blocks until a connection is accepted from a client
                  */
-                ServerSocket serverSocket = new ServerSocket(0);
+                ServerSocket serverSocket = new ServerSocket(11000,50,servaddr);
                 serverSocket.setReuseAddress(true);
-                Port = serverSocket.getLocalPort();
-                adrr=serverSocket.getInetAddress();
+                //Port = serverSocket.getLocalPort();
+                //adrr=serverSocket.getInetAddress();
 
                 Log.v("NOUS", "Bonjour socket 3");
 
@@ -453,8 +464,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 InetAddress servaddr = InetAddress.getByName(IPserv);
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
-               Log.v("Nous", "log2 niveau client avec adresse du maître : " + servaddr + "et adresse serveur : " + adrr + "numero de port" + Port);
-                Socket socket = new Socket(adrr,Port);
+                Log.v("NOUS","test avant log2");
+               Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et adresse serveur : " + servaddr + " numero de port " + 11000);
+                Socket socket = new Socket(servaddr,11000);
                 Log.v("Nous", "log3 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());

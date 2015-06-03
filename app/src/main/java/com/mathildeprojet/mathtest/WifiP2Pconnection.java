@@ -180,7 +180,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                             } catch (UnknownHostException e) {
                                                 e.printStackTrace();
                                             }
-                                            serv.setIP(info.groupOwnerAddress.toString());
+                                            serv.setIP(info.groupOwnerAddress);
                                             serv.execute();
 
                                         } else {
@@ -216,9 +216,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                                             //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
 
-                                            Client client = new Client(info.groupOwnerAddress.toString());
+                                            Client client = new Client(info.groupOwnerAddress);
                                      //       Log.v("NOUS", "avant setIP ");
-                                            client.setIPserv(info.groupOwnerAddress.toString());
+                                            client.setIPserv(info.groupOwnerAddress);
                                             Log.v("NOUS", "Début de la connexion de l'esclave à la socket");
                                             client.execute();
                                      //       Log.v("NOUS", "après exécute");
@@ -314,7 +314,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
-            serv.setIP(info.groupOwnerAddress.toString());
+            serv.setIP(info.groupOwnerAddress);
             serv.execute();
 
         }else{
@@ -347,8 +347,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
             //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
-            Client client = new Client(info.groupOwnerAddress.toString());
-            client.setIPserv(info.groupOwnerAddress.toString());
+            Client client = new Client(info.groupOwnerAddress);
+            client.setIPserv(info.groupOwnerAddress);
             client.execute();
 
         }
@@ -364,15 +364,15 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
 
-        String IP;
+        InetAddress IP;
         InetAddress servaddr;
 
         public Serveuur(String seerv) throws UnknownHostException {
-            IP=seerv;
+
             servaddr=InetAddress.getByName(seerv);
         }
 
-        public void setIP(String ip) {
+        public void setIP(InetAddress ip) {
             IP=ip;
         }
 
@@ -443,13 +443,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public class Client extends AsyncTask<Void, Void, String> {
 
 
-        String IPserv;
+        InetAddress IPserv;
 
-        public Client(String serv) {
+        public Client(InetAddress serv) {
             IPserv = serv;
         }
 
-        public void setIPserv(String IP) {
+        public void setIPserv(InetAddress IP) {
             IPserv = IP;
         }
 
@@ -461,12 +461,12 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             try {
 
                 Log.v("Nous", "log1 niveau client");
-                InetAddress servaddr = InetAddress.getByName(IPserv);
+
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
                 Log.v("NOUS","test avant log2");
-               Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et adresse serveur : " + servaddr + " numero de port " + 11000);
-                Socket socket = new Socket(servaddr,11000);
+               Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et adresse serveur : " + " numero de port " + 11000);
+                Socket socket = new Socket(IPserv,11000);
                 Log.v("Nous", "log3 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());
@@ -496,7 +496,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 ;
             }
 
-            return IPserv;
+            return IPserv.toString();
 
         }
     }

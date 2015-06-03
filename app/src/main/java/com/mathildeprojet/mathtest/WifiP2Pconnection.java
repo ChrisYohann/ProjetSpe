@@ -364,6 +364,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         }
 
 
+
         public String doInBackground(Void...params) {
 
           //  Log.v("NOUS", "Bonjour socket");
@@ -440,7 +441,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 Log.v("Nous", "log1 niveau client");
                 //socket.bind(null);
                 //Log.v("Nous", "log2 niveau client");
-                socket.connect((new InetSocketAddress(IPserv, socket.getLocalPort())),10000);
+                socket.connect()
                 Log.v("Nous", "log2 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());

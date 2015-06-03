@@ -174,12 +174,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                                             Log.v("NOUS", "Etablissement connexion du maître)");
                                             //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
-                                            Serveuur serv = null;
-                                            try {
-                                                serv = new Serveuur(info.groupOwnerAddress.toString());
-                                            } catch (UnknownHostException e) {
-                                                e.printStackTrace();
-                                            }
+                                            Serveuur serv = new Serveuur();
                                             serv.setIP(info.groupOwnerAddress);
                                             serv.execute();
 
@@ -310,7 +305,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
             Serveuur serv = null;
             try {
-                serv = new Serveuur(info.groupOwnerAddress.toString());
+                serv = new Serveuur(info.groupOwnerAddress);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -367,9 +362,14 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         InetAddress IP;
         InetAddress servaddr;
 
-        public Serveuur(String seerv) throws UnknownHostException {
+        public Serveuur() {
 
-            servaddr=InetAddress.getByName(seerv);
+        }
+
+        public Serveuur(InetAddress seerv) throws UnknownHostException {
+
+            servaddr=seerv;
+            IP=seerv;
         }
 
         public void setIP(InetAddress ip) {

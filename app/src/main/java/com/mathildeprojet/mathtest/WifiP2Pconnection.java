@@ -174,8 +174,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                                             Log.v("NOUS", "Etablissement connexion du maître)");
                                             //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
-                                            Serveuur serv = new Serveuur(info.groupOwnerAddress.getHostAddress());
-                                            serv.setIP(info.groupOwnerAddress.getHostAddress());
+                                            Serveuur serv = new Serveuur(info.groupOwnerAddress.toString());
+                                            serv.setIP(info.groupOwnerAddress.toString());
                                             serv.execute();
 
                                         } else {
@@ -211,7 +211,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                                             //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
 
-                                            Client client = new Client(info.groupOwnerAddress.getHostAddress());
+                                            Client client = new Client(info.groupOwnerAddress.toString());
                                      //       Log.v("NOUS", "avant setIP ");
                                             client.setIPserv(info.groupOwnerAddress.toString());
                                             Log.v("NOUS", "Début de la connexion de l'esclave à la socket");
@@ -382,7 +382,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 Log.v("NOUS", "Bonjour socket 3");
 
 
-                serverSocket.bind(new InetSocketAddress(IP,Port));
+                //serverSocket.bind(new InetSocketAddress(IP,Port));
 
 
                 Log.v("NOUS", "La Socket est prêt à être acceptée");
@@ -444,7 +444,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
             try {
-                
+
                 Log.v("Nous", "log1 niveau client");
                 InetAddress servaddr = InetAddress.getByName(IPserv);
 

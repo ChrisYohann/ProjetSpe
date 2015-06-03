@@ -368,9 +368,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         InetAddress servaddr;
 
         public Serveuur(InetAddress seerv) throws UnknownHostException {
-            servaddr=seerv;
+            servaddr = seerv;
         }
-
         public void setIP(InetAddress ip) {
             IP=ip;
         }
@@ -460,12 +459,14 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             try {
 
                 Log.v("Nous", "log1 niveau client");
+
                 InetAddress servaddr = IPserv;
+
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
                 Log.v("NOUS","test avant log2");
                Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et adresse serveur : " + servaddr + " numero de port " + 11000);
-                Socket socket = new Socket(servaddr,11000);
+                Socket socket = new Socket(IPserv,11000);
                 Log.v("Nous", "log3 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());

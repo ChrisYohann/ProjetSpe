@@ -62,6 +62,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private Looper lpr;
     AlertDialog.Builder adbldr;
     public boolean onetime=true;
+    public int Port;
 
     private WifiP2pManager mManager;
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
@@ -375,10 +376,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                  */
                 ServerSocket serverSocket = new ServerSocket();
                 serverSocket.setReuseAddress(true);
+                Port = serverSocket.getLocalPort();
 
                 Log.v("NOUS", "Bonjour socket 3");
 
-                serverSocket.bind(new InetSocketAddress(IP,5560));
+                serverSocket.bind(new InetSocketAddress(IP,Port));
 
                 Log.v("NOUS", "La Socket est prêt à être acceptée");
                 Socket client = serverSocket.accept();
@@ -440,9 +442,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             try {
 
                 Log.v("Nous", "log1 niveau client");
-                socket.bind(new InetSocketAddress(IPserv, 5560));
-                Log.v("Nous", "log2 niveau client");
-                socket.connect((new InetSocketAddress(IPserv, 5560)),10000);
+               // socket.bind(new InetSocketAddress(IPserv, 5560));
+               // Log.v("Nous", "log2 niveau client");
+                socket.connect((new InetSocketAddress(IPserv,Port)),10000);
                 Log.v("Nous", "log2 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());

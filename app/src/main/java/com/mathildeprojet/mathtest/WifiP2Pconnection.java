@@ -374,13 +374,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                  * Create a server socket and wait for client connections. This
                  * call blocks until a connection is accepted from a client
                  */
-                ServerSocket serverSocket = new ServerSocket();
+                ServerSocket serverSocket = new ServerSocket(0);
                 serverSocket.setReuseAddress(true);
                 Port = serverSocket.getLocalPort();
 
                 Log.v("NOUS", "Bonjour socket 3");
 
-                serverSocket.bind(new InetSocketAddress(IP,Port));
+              //  serverSocket.bind(new InetSocketAddress(IP,Port));
 
                 Log.v("NOUS", "La Socket est prêt à être acceptée");
                 Socket client = serverSocket.accept();

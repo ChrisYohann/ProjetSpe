@@ -63,6 +63,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     AlertDialog.Builder adbldr;
     public boolean onetime=true;
     public int Port;
+    public InetAddress adrr;
 
     private WifiP2pManager mManager;
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
@@ -303,8 +304,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
             //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
-            Serveuur serv = new Serveuur(info.groupOwnerAddress.getHostAddress());
-            serv.setIP( info.groupOwnerAddress.getHostAddress());
+            Serveuur serv = new Serveuur(info.groupOwnerAddress.toString());
+            serv.setIP(info.groupOwnerAddress.toString());
             serv.execute();
 
         }else{
@@ -337,8 +338,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
             //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
-            Client client = new Client(info.groupOwnerAddress.getHostAddress());
-            client.setIPserv(info.groupOwnerAddress.getHostAddress());
+            Client client = new Client(info.groupOwnerAddress.toString());
+            client.setIPserv(info.groupOwnerAddress.toString());
             client.execute();
 
         }
@@ -375,18 +376,21 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                  * Create a server socket and wait for client connections. This
                  * call blocks until a connection is accepted from a client
                  */
-                ServerSocket serverSocket = new ServerSocket();
+                ServerSocket serverSocket = new ServerSocket(0);
                 serverSocket.setReuseAddress(true);
                 Port = serverSocket.getLocalPort();
+                adrr=serverSocket.getInetAddress();
 
                 Log.v("NOUS", "Bonjour socket 3");
 
 
-                //serverSocket.bind(new InetSocketAddress(IP,Port));
+
+                // serverSocket.bind(new InetSocketAddress(IP,Port));
 
 
                 Log.v("NOUS", "La Socket est prêt à être acceptée");
                 Socket client = serverSocket.accept();
+
 
                 Log.v("NOUS", "socket créée avec succès");
                 DataOutputStream dOut = new DataOutputStream(client.getOutputStream());
@@ -449,8 +453,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 InetAddress servaddr = InetAddress.getByName(IPserv);
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
-               Log.v("Nous", "log2 niveau client");
-                Socket socket = new Socket(servaddr,Port);
+               Log.v("Nous", "log2 niveau client avec adresse du maître : " + servaddr + "et adresse serveur : " + adrr + "numero de port" + Port);
+                Socket socket = new Socket(adrr,Port);
                 Log.v("Nous", "log3 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());

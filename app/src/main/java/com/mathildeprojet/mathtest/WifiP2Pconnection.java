@@ -251,7 +251,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 // Respond to this device's wifi state changing
             }
 
-         //   Log.v("NOUS", "test data");
+            Log.v("NOUS", "test data");
 
 
         }
@@ -366,9 +366,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
         public String doInBackground(Void...params) {
 
-          //  Log.v("NOUS", "Bonjour socket");
+            Log.v("NOUS", "Bonjour socket");
             try {
-          //      Log.v("NOUS", "Bonjour socket 2");
+               Log.v("NOUS", "Bonjour socket 2");
                 /**
                  * Create a server socket and wait for client connections. This
                  * call blocks until a connection is accepted from a client
@@ -376,8 +376,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 ServerSocket serverSocket = new ServerSocket();
                 serverSocket.setReuseAddress(true);
 
-          //      Log.v("NOUS", "Bonjour socket 3");
-                serverSocket.bind(new InetSocketAddress(IP, 5353));
+                Log.v("NOUS", "Bonjour socket 3");
+
+                serverSocket.bind(new InetSocketAddress(IP,5560));
+
                 Log.v("NOUS", "La Socket est prêt à être acceptée");
                 Socket client = serverSocket.accept();
 
@@ -438,9 +440,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             try {
 
                 Log.v("Nous", "log1 niveau client");
-                //socket.bind(null);
-                //Log.v("Nous", "log2 niveau client");
-                socket.connect((new InetSocketAddress(IPserv, 5353)),10000); 
+                socket.bind(new InetSocketAddress(IPserv, 5560));
+                Log.v("Nous", "log2 niveau client");
+                socket.connect((new InetSocketAddress(IPserv, 5560)),10000);
                 Log.v("Nous", "log2 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());

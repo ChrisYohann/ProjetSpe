@@ -94,7 +94,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     }*/
     @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
+        final String action = intent.getAction();
 
         WifiManager wifiMan = (WifiManager) ctx.getSystemService(
                 Context.WIFI_SERVICE);
@@ -166,20 +166,16 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                     }
                                 });
 
+                                if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
                                 mManager.requestConnectionInfo(mChannel, new WifiP2pManager.ConnectionInfoListener() {
                                     @Override
                                     public void onConnectionInfoAvailable(WifiP2pInfo info) {
-                                      //  Log.v("NOUS", "Bonjour et bienvenue conconnection");
+                                        //  Log.v("NOUS", "Bonjour et bienvenue conconnection");
                                         if (info.isGroupOwner) {
 
                                             Log.v("NOUS", "Etablissement connexion du maître)");
                                             //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
-                                            Serveuur serv = null;
-                                            try {
-                                                serv = new Serveuur(info.groupOwnerAddress);
-                                            } catch (UnknownHostException e) {
-                                                e.printStackTrace();
-                                            }
+                                            Serveuur serv = new Serveuur();
                                             serv.setIP(info.groupOwnerAddress);
                                             serv.execute();
 
@@ -187,15 +183,15 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                             Log.v("NOUS", "Etablissement connexion de l'esclave");
                                             //give server a second to setup the server socket
                                             try {
-                                         //       Log.v("NOUS", "DANS le try");
+                                                //       Log.v("NOUS", "DANS le try");
                                                 Thread.sleep(1000);
                                             } catch (Exception e) {
                                                 System.out.println(e.toString());
                                             }
-                                      //      Log.v("NOUS", "après le catch");
+                                            //      Log.v("NOUS", "après le catch");
                                             String myIP = "";
                                             try {
-                                       //         Log.v("NOUS", "dans le 2eme try");
+                                                //         Log.v("NOUS", "dans le 2eme try");
                                                 Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
                                                 while (en.hasMoreElements()) {
                                                     NetworkInterface ni = en.nextElement();
@@ -211,23 +207,24 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                                 // TODO Auto-generated catch block
                                                 e.printStackTrace();
                                             }
-                                       //     Log.v("NOUS", "après le 2eme catch");
+                                            //     Log.v("NOUS", "après le 2eme catch");
 
 
                                             //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
 
                                             Client client = new Client(info.groupOwnerAddress);
-                                     //       Log.v("NOUS", "avant setIP ");
+                                            //       Log.v("NOUS", "avant setIP ");
                                             client.setIPserv(info.groupOwnerAddress);
                                             Log.v("NOUS", "Début de la connexion de l'esclave à la socket");
                                             client.execute();
-                                     //       Log.v("NOUS", "après exécute");
+                                            //       Log.v("NOUS", "après exécute");
 
 
                                         }
 
                                     }
                                 });
+                            }
                             }
 
 
@@ -252,11 +249,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 } else {//c'est deconnecté
                 }
                 // Respond to new connection or disconnections
-            } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-                // Log.v("NOUS", "dire que notre etat de co change");
-                // Respond to this device's wifi state changing
             }
-
             Log.v("NOUS", "test data");
 
 
@@ -367,11 +360,21 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         InetAddress IP;
         InetAddress servaddr;
 
+
+
+        public Serveuur() {
+
+        }
+
         public Serveuur(InetAddress seerv) throws UnknownHostException {
-            servaddr = seerv;
+
+            servaddr=seerv;
+            IP=seerv;
+
         }
         public void setIP(InetAddress ip) {
             IP=ip;
+            //servaddr=ip;
         }
 
 
@@ -486,11 +489,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                             Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
                             Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
                             break;
-
+                        default:
+                            done=true;
                     }
                 }
-
+                Log.v("NOUS", "log4 juste avant le close()");
                 dIn.close();
+                Log.v("NOUS", "log5 juste après le close()");
             } catch (IOException e) {
                 Log.d("NOUS", "Erreur coté client: " + e.getMessage());
                 ;

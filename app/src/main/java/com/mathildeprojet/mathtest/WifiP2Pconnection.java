@@ -64,6 +64,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     AlertDialog.Builder adbldr;
     public boolean onetime=true;
 
+
     private WifiP2pManager mManager;
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
     private WifiP2PActivity mActivity;
@@ -77,6 +78,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     ArrayAdapter<Connection> adapter;
     String deviceAddress;
     View view;
+    String message="";
 
     //TODO: remplacer le TextView connecte par WifiP2PActivity activity !
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Channel channel,
@@ -95,6 +97,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        message="Bonjour Rafi";
 
         WifiManager wifiMan = (WifiManager) ctx.getSystemService(
                 Context.WIFI_SERVICE);
@@ -128,6 +131,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             }
             // Check to see if Wi-Fi is enabled and notify appropriate activity
         } else {
+
+            
             if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
                 Log.v("NOUS", "on a de nouveaux pairs à rechercher");
                 //TODO:nouveau
@@ -374,6 +379,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
         public void setIP(InetAddress ip) {
             IP=ip;
+            servaddr=ip;
         }
 
 
@@ -408,7 +414,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 // Send first message
                 dOut.writeByte(1);
-                dOut.writeUTF("This is the first type of message.");
+                dOut.writeUTF(message);
                 dOut.flush(); // Send off the data
 
 // Send the second message
@@ -486,6 +492,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                             Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
                             Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
                             break;
+                        default:
+                            done = true;
+
 
                     }
                 }

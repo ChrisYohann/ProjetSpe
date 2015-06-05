@@ -43,6 +43,7 @@ import java.net.InetSocketAddress;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import 	java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -76,11 +77,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private WifiInfo info;
     Collection<WifiP2pDevice> devicelist;
     private WifiP2pConfig config = new WifiP2pConfig();
-    ArrayList<Connection> connections;
-    ArrayAdapter<Connection> adapter;
     String deviceAddress;
     View view;
-    String message="";
+
+    public String message;
 
     //TODO: remplacer le TextView connecte par WifiP2PActivity activity !
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Channel channel,
@@ -139,7 +139,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
                 Log.v("NOUS", "on a de nouveaux pairs à rechercher");
                 //TODO:nouveau
-                if (mManager != null&&onetime) {
+                if (mManager != null) {
                     //request peers va permettre de connaître les ports auxquels on PEUT se connecter, il s'appuie sur la liste des pairs disponibles
 
 
@@ -164,7 +164,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                     @Override
                                     public void onSuccess() {
                                         Log.v("NOUS", "Connexion établie");
-
                                         mManager.requestConnectionInfo(mChannel, new WifiP2pManager.ConnectionInfoListener() {
                                             @Override
                                             public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -218,11 +217,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                                     //       Log.v("NOUS", "après exécute");
 
 
+
                                                 }
 
                                             }
                                         });
-
 
                                     }
 
@@ -231,7 +230,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                         Log.v("NOUS", "Echec de Connextion");
                                     }
                                 });
-
 
 
 
@@ -244,7 +242,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                         }
                     });
 
-                }
+                                    }
 
                 // Call WifiP2pManager.requestPeers() to get a list of current peers
             } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
@@ -381,7 +379,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
         InetAddress IP;
         InetAddress servaddr;
-
+        SocketAddress sockaddr;
+        String mes=message;
 
 
         public Serveuur() {
@@ -397,7 +396,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         public void setIP(InetAddress ip) {
             IP=ip;
 
+
             servaddr=ip;
+
 
         }
 
@@ -407,18 +408,20 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
             Log.v("NOUS", "Bonjour socket");
             try {
-               Log.v("NOUS", "Bonjour socket 2");
+               Log.v("NOUS", "Bonjour socket 2, je suis la socket à l'adresse "+ sockaddr);
                 /**
                  * Create a server socket and wait for client connections. This
                  * call blocks until a connection is accepted from a client
                  */
                 ServerSocket serverSocket = new ServerSocket(11000,50,servaddr);
+
                 serverSocket.setReuseAddress(true);
                 serverSocket.setSoTimeout(10000);
                 //Port = serverSocket.getLocalPort();
                 //adrr=serverSocket.getInetAddress();
 
                 Log.v("NOUS", "Bonjour socket 3");
+                Log.v("NOUS", "Bonjour socket 7, je suis la socket à l'adresse "+ serverSocket.getLocalSocketAddress() );
 
 
 
@@ -427,6 +430,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                 Log.v("NOUS", "La Socket est prêt à être acceptée");
                 Socket client = serverSocket.accept();
+
 
 
                 Log.v("NOUS", "socket créée avec succès");
@@ -464,12 +468,14 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             }
             return null;
         }
+
     }
 
     public class Client extends AsyncTask<Void, Void, String> implements Parcelable {
 
 
         InetAddress IPserv;
+        SocketAddress sockaddr;
 
         public Client(InetAddress serv) {
             IPserv = serv;
@@ -492,8 +498,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
+
                 Log.v("NOUS", "test avant log2");
                Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et adresse serveur : " + servaddr + " numero de port " + 11000);
+
                 Socket socket = new Socket(IPserv,11000);
 
 

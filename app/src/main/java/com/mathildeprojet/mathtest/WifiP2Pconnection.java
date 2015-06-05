@@ -57,7 +57,7 @@ import java.util.Enumeration;
  */
 
 public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pManager.ChannelListener,
-        WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener {
+        WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener, Parcelable {
 
 
     //private Boolean discoveryOn=false;
@@ -66,6 +66,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private Looper lpr;
     AlertDialog.Builder adbldr;
     public boolean onetime=true;
+
 
     private WifiP2pManager mManager;
     private Channel mChannel; //on suppose que le channel est la connection entre 2 appareils
@@ -78,6 +79,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private WifiP2pConfig config = new WifiP2pConfig();
     String deviceAddress;
     View view;
+
     public String message;
 
     //TODO: remplacer le TextView connecte par WifiP2PActivity activity !
@@ -96,7 +98,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     }*/
     @Override
     public void onReceive(Context context, Intent intent) {
+
         final String action = intent.getAction();
+        message="Coucou Rafi";
 
         WifiManager wifiMan = (WifiManager) ctx.getSystemService(
                 Context.WIFI_SERVICE);
@@ -130,6 +134,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             }
             // Check to see if Wi-Fi is enabled and notify appropriate activity
         } else {
+
+            
             if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
                 Log.v("NOUS", "on a de nouveaux pairs à rechercher");
                 //TODO:nouveau
@@ -211,6 +217,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                                     //       Log.v("NOUS", "après exécute");
 
 
+
                                                 }
 
                                             }
@@ -225,6 +232,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                 });
 
 
+
                             }
 
 
@@ -234,7 +242,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                         }
                     });
 
-                }
+
+                                    }
+
 
                 // Call WifiP2pManager.requestPeers() to get a list of current peers
             } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
@@ -353,6 +363,17 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+
+    }
+
 
     public class Serveuur extends AsyncTask<Void, Void, String> {
 
@@ -376,7 +397,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         }
         public void setIP(InetAddress ip) {
             IP=ip;
+
+
             servaddr=ip;
+
+
         }
 
 
@@ -391,12 +416,14 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                  * call blocks until a connection is accepted from a client
                  */
                 ServerSocket serverSocket = new ServerSocket(11000,50,servaddr);
+
                 serverSocket.setReuseAddress(true);
                 serverSocket.setSoTimeout(10000);
                 //Port = serverSocket.getLocalPort();
                 //adrr=serverSocket.getInetAddress();
 
                 Log.v("NOUS", "Bonjour socket 3");
+                Log.v("NOUS", "Bonjour socket 7, je suis la socket à l'adresse "+ serverSocket.getLocalSocketAddress() );
 
 
 
@@ -409,13 +436,14 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 Log.v("NOUS", "l/'adresse de la socket est" +sockaddr);
 
 
+
                 Log.v("NOUS", "socket créée avec succès");
                 DataOutputStream dOut = new DataOutputStream(client.getOutputStream());
 
 
 // Send first message
                 dOut.writeByte(1);
-                dOut.writeUTF("This is the first type of message.");
+                dOut.writeUTF(message);
                 dOut.flush(); // Send off the data
 
 // Send the second message
@@ -435,6 +463,31 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                 dOut.close();
 
+
+                DataInputStream dIn = new DataInputStream(client.getInputStream());
+
+                boolean done = false;
+                while (!done) {
+                    byte messageType = dIn.readByte();
+
+                    switch (messageType) {
+                        case 1: // Type A
+                            Log.v("Nous ", "Message A :" + dIn.readUTF());
+                            break;
+                        case 2: // Type B
+                            Log.v("Nous ", "Message B :" + dIn.readUTF());
+                            break;
+                        case 3: // Type C
+                            Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
+                            Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
+                            break;
+                        default:
+
+                            done=true;
+                    }
+                }
+
+
                 client.close();
                 serverSocket.close();
 
@@ -448,7 +501,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     }
 
-    public class Client extends AsyncTask<Void, Void, String> {
+    public class Client extends AsyncTask<Void, Void, String> implements Parcelable {
 
 
         InetAddress IPserv;
@@ -475,11 +528,13 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
+
                 Log.v("NOUS","test avant log2");
                 Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " numero de port " + 11000);
                 Socket socket = new Socket(IPserv,11000);
                 sockaddr=socket.getLocalSocketAddress();
                 Log.v("NOUS"," et socket adresse : " + sockaddr);
+
                 Log.v("Nous", "log3 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());
@@ -500,12 +555,40 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                             Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
                             break;
                         default:
+
                             done=true;
                     }
                 }
+
+
                 Log.v("NOUS", "log4 juste avant le close()");
                 dIn.close();
                 Log.v("NOUS", "log5 juste après le close()");
+
+                DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
+
+// Send first message
+                dOut.writeByte(1);
+                dOut.writeUTF("coucou jm");
+                dOut.flush(); // Send off the data
+
+// Send the second message
+                dOut.writeByte(2);
+                dOut.writeUTF("Maintenant message du client pour le serveur");
+                dOut.flush(); // Send off the data
+
+// Send the third message
+                dOut.writeByte(3);
+                dOut.writeUTF("1er message");
+                dOut.writeUTF("2ème message");
+                dOut.flush(); // Send off the data
+
+// Send the exit message
+                dOut.writeByte(-1);
+                dOut.flush();
+
+                dOut.close();
+
             } catch (IOException e) {
                 Log.d("NOUS", "Erreur coté client: " + e.getMessage());
                 ;
@@ -513,6 +596,17 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
             return IPserv.toString();
 
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+
+            
         }
     }
 

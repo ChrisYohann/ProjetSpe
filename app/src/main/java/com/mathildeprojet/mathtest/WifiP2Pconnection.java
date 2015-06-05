@@ -412,6 +412,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 Log.v("NOUS", "socket créée avec succès");
                 DataOutputStream dOut = new DataOutputStream(client.getOutputStream());
 
+
 // Send first message
                 dOut.writeByte(1);
                 dOut.writeUTF("This is the first type of message.");

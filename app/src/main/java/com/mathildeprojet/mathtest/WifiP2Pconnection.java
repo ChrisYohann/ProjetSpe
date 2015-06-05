@@ -242,7 +242,9 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                         }
                     });
 
+
                                     }
+
 
                 // Call WifiP2pManager.requestPeers() to get a list of current peers
             } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
@@ -408,7 +410,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
             Log.v("NOUS", "Bonjour socket");
             try {
-               Log.v("NOUS", "Bonjour socket 2, je suis la socket à l'adresse "+ sockaddr);
+               Log.v("NOUS", "Bonjour socket 2");
                 /**
                  * Create a server socket and wait for client connections. This
                  * call blocks until a connection is accepted from a client
@@ -430,6 +432,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                 Log.v("NOUS", "La Socket est prêt à être acceptée");
                 Socket client = serverSocket.accept();
+                sockaddr=serverSocket.getLocalSocketAddress();
+                Log.v("NOUS", "l/'adresse de la socket est" +sockaddr);
 
 
 
@@ -457,6 +461,31 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 dOut.flush();
 
                 dOut.close();
+
+
+                DataInputStream dIn = new DataInputStream(client.getInputStream());
+
+                boolean done = false;
+                while (!done) {
+                    byte messageType = dIn.readByte();
+
+                    switch (messageType) {
+                        case 1: // Type A
+                            Log.v("Nous ", "Message A :" + dIn.readUTF());
+                            break;
+                        case 2: // Type B
+                            Log.v("Nous ", "Message B :" + dIn.readUTF());
+                            break;
+                        case 3: // Type C
+                            Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
+                            Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
+                            break;
+                        default:
+
+                            done=true;
+                    }
+                }
+
 
                 client.close();
                 serverSocket.close();
@@ -499,11 +528,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
 
-                Log.v("NOUS", "test avant log2");
-               Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et adresse serveur : " + servaddr + " numero de port " + 11000);
-
+                Log.v("NOUS","test avant log2");
+                Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " numero de port " + 11000);
                 Socket socket = new Socket(IPserv,11000);
-
+                sockaddr=socket.getLocalSocketAddress();
+                Log.v("NOUS"," et socket adresse : " + sockaddr);
 
                 Log.v("Nous", "log3 niveau client");
 
@@ -529,9 +558,36 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                             done=true;
                     }
                 }
+
+
                 Log.v("NOUS", "log4 juste avant le close()");
                 dIn.close();
                 Log.v("NOUS", "log5 juste après le close()");
+
+                DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
+
+// Send first message
+                dOut.writeByte(1);
+                dOut.writeUTF("coucou jm");
+                dOut.flush(); // Send off the data
+
+// Send the second message
+                dOut.writeByte(2);
+                dOut.writeUTF("Maintenant message du client pour le serveur");
+                dOut.flush(); // Send off the data
+
+// Send the third message
+                dOut.writeByte(3);
+                dOut.writeUTF("1er message");
+                dOut.writeUTF("2ème message");
+                dOut.flush(); // Send off the data
+
+// Send the exit message
+                dOut.writeByte(-1);
+                dOut.flush();
+
+                dOut.close();
+
             } catch (IOException e) {
                 Log.d("NOUS", "Erreur coté client: " + e.getMessage());
                 ;

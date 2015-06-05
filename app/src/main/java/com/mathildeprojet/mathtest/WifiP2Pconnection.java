@@ -43,6 +43,7 @@ import java.net.InetSocketAddress;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import 	java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -75,8 +76,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private WifiInfo info;
     Collection<WifiP2pDevice> devicelist;
     private WifiP2pConfig config = new WifiP2pConfig();
-    ArrayList<Connection> connections;
-    ArrayAdapter<Connection> adapter;
     String deviceAddress;
     View view;
     public String message;
@@ -361,6 +360,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
         InetAddress IP;
         InetAddress servaddr;
+        SocketAddress sockaddr;
         String mes=message;
 
 
@@ -385,7 +385,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
             Log.v("NOUS", "Bonjour socket");
             try {
-               Log.v("NOUS", "Bonjour socket 2");
+               Log.v("NOUS", "Bonjour socket 2, je suis la socket à l'adresse "+ sockaddr);
                 /**
                  * Create a server socket and wait for client connections. This
                  * call blocks until a connection is accepted from a client
@@ -449,6 +449,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
         InetAddress IPserv;
+        SocketAddress sockaddr;
 
         public Client(InetAddress serv) {
             IPserv = serv;
@@ -472,7 +473,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
                 Log.v("NOUS","test avant log2");
-                Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et adresse serveur : " + servaddr + " numero de port " + 11000);
+                Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et socket adresse : " + sockaddr + " numero de port " + 11000);
                 Socket socket = new Socket(IPserv,11000);
                 Log.v("Nous", "log3 niveau client");
 

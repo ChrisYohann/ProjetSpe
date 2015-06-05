@@ -233,7 +233,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                         }
                     });
-                    onetime=false;
+
                 }
 
                 // Call WifiP2pManager.requestPeers() to get a list of current peers
@@ -385,7 +385,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
             Log.v("NOUS", "Bonjour socket");
             try {
-               Log.v("NOUS", "Bonjour socket 2, je suis la socket à l'adresse "+ sockaddr);
+               Log.v("NOUS", "Bonjour socket 2");
                 /**
                  * Create a server socket and wait for client connections. This
                  * call blocks until a connection is accepted from a client
@@ -405,6 +405,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                 Log.v("NOUS", "La Socket est prêt à être acceptée");
                 Socket client = serverSocket.accept();
+                sockaddr=serverSocket.getLocalSocketAddress();
+                Log.v("NOUS", "l/'adresse de la socket est" +sockaddr);
 
 
                 Log.v("NOUS", "socket créée avec succès");
@@ -473,8 +475,10 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
                 // socket.bind(new InetSocketAddress(IPserv, 5560));
                 Log.v("NOUS","test avant log2");
-                Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " et socket adresse : " + sockaddr + " numero de port " + 11000);
+                Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " numero de port " + 11000);
                 Socket socket = new Socket(IPserv,11000);
+                sockaddr=socket.getLocalSocketAddress();
+                Log.v("NOUS"," et socket adresse : " + sockaddr);
                 Log.v("Nous", "log3 niveau client");
 
                 DataInputStream dIn = new DataInputStream(socket.getInputStream());

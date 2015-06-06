@@ -44,6 +44,7 @@ import android.os.AsyncTask;
         import java.io.InputStream;
         import  java.io.FilterInputStream;
         import java.io.DataInputStream;
+import java.net.SocketException;
 
 
 public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,ConnectionInfoListener {
@@ -169,8 +170,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         }
     }
 
-    public void find()
-    {
+    public void find() throws SocketException {
         mManager.discoverPeers(channel, new
                 WifiP2pManager.ActionListener() {
                     @Override
@@ -184,6 +184,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+        Sender envoie = new Sender("bonjour JM");
     }
 
     @Override

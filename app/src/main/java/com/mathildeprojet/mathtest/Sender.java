@@ -19,10 +19,11 @@ import java.net.UnknownHostException;
  * Created by Rafaelle on 27/05/2015.
  */
 public class Sender {
-    private String message="bonjour JM";
+    private String message;
     private DatagramSocket socket;
 
-    public void Sender(String message) throws SocketException {
+
+    public Sender(String message) throws SocketException {
         this.message=message;
         socket=new DatagramSocket();
     }

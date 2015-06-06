@@ -13,6 +13,7 @@ public class Receiver {
     DatagramPacket pack;
     DatagramSocket socket;
     InetAddress senderadr;
+    
 
     public void Receiver() throws SocketException {
         this.socket=new DatagramSocket();

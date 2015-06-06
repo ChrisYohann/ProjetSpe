@@ -19,8 +19,9 @@ public class Receiver {
         this.socket=new DatagramSocket();
     }
 
-    public void receive() throws IOException {
+    public String receive() throws IOException {
         socket.receive(pack);
+        return new String(pack.getData()) ;
     }
 
     public InetAddress getSender() {

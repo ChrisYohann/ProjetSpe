@@ -14,8 +14,13 @@ import com.mathildeprojet.mathtest.WifiP2Pconnection;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
+import 	java.net.NetworkInterface;
+import java.util.Enumeration;
+import 	java.util.Formatter;
+
 import java.net.UnknownHostException;
 
 /**
@@ -34,17 +39,34 @@ public class Sender {
     }
 
     public void send() throws IOException {
-        this.context = context.getApplicationContext();
-        WifiManager wim = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        int ip = wim.getConnectionInfo().getIpAddress();
+
         InetAddress adr = InetAddress.getByName("224.0.0.1");
-        InetAddress moi= socket.getLocalAddress();
+       // InetAddress moi= socket.getLocalAddress();
         byte[] data = new byte[message.length()];
         data=message.getBytes();
-        Log.v("Nous", "mon message "+message+ " adresse multicast "+adr + " mon adresse a moi " + moi + "mon ip" + ip);
+        Log.v("Nous", "mon message "+message+ " adresse multicast "+adr  + "mon ip" + getLocalIpAddress());
 
-        socket.send(new DatagramPacket(data,message.length(),adr,8888));
+        socket.send(new DatagramPacket(data,data.length,adr,8888));
 
+    }
+
+    public String getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()  && inetAddress instanceof Inet4Address) {
+                        String ip =  inetAddress.getHostAddress();
+
+                        return ip;
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            Log.e("NOUS", ex.toString());
+        }
+        return null;
     }
 
 

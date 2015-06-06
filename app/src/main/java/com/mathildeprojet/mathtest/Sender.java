@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.mathildeprojet.mathtest.WifiP2Pconnection;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -30,11 +31,12 @@ public class Sender {
         socket=new DatagramSocket();
     }
 
-    public void send() throws UnknownHostException {
+    public void send() throws IOException {
         InetAddress adr = InetAddress.getByName("224.0.0.1");
         InetAddress moi= socket.getLocalAddress();
         byte[] data = new byte[message.length()];
         Log.v("Nous", "mon message "+message+ " adresse multicast "+adr + " mon adresse a moi " + moi);
+        socket.send(new DatagramPacket(data,message.length(),adr,8888));
     }
 
 

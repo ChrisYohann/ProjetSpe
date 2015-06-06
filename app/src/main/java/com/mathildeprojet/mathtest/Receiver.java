@@ -7,6 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.MulticastSocket;
 
 /**
  * Created by Rafaelle on 06/06/2015.
@@ -23,10 +24,11 @@ public class Receiver {
 
     public String receive() throws IOException {
         byte[] buffer = new byte[256];
+        MulticastSocket rSocket = new MulticastSocket(8888);
         DatagramPacket rPacket = new DatagramPacket(buffer, buffer.length);
         Log.d("Nous", "taille: " + rPacket.getLength() );
-        Log.d("Nous", "socket: " + socket.getPort() );
-        socket.receive(pack);
+        Log.d("Nous", "socket port: " + rSocket.getPort() );
+        rSocket.receive(pack);
         return new String(pack.getData()) ;
     }
 

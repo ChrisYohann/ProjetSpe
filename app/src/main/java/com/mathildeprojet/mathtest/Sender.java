@@ -35,6 +35,7 @@ public class Sender {
         InetAddress moi= socket.getLocalAddress();
         byte[] data = new byte[message.length()];
         Log.v("Nous", "mon message "+message+ " adresse multicast "+adr + " mon adresse a moi " + moi);
+        
     }
 
 

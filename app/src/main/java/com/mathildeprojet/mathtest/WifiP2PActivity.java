@@ -130,7 +130,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         }
         else if(v == buttonFind)
         {
-            find();
+            //find();
+
 
         }
         else if(v==buttonsocket) {

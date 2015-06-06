@@ -205,7 +205,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 }); */
         Toast.makeText(WifiP2PActivity.this, "envoie", Toast.LENGTH_SHORT).show();
         Sender envoie = new Sender("bonjour JM");
-        envoie.send();
+        try {
+            envoie.send();
+        } catch ( IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

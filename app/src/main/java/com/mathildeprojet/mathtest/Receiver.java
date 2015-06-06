@@ -1,5 +1,7 @@
 package com.mathildeprojet.mathtest;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -20,6 +22,10 @@ public class Receiver {
     }
 
     public String receive() throws IOException {
+        byte[] buffer = new byte[256];
+        DatagramPacket rPacket = new DatagramPacket(buffer, buffer.length);
+        Log.d("Nous", "taille: " + rPacket.getLength() );
+        Log.d("Nous", "socket: " + socket.getPort() );
         socket.receive(pack);
         return new String(pack.getData()) ;
     }

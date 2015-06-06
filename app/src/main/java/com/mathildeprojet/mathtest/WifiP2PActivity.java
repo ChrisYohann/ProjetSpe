@@ -45,6 +45,7 @@ import android.os.AsyncTask;
         import  java.io.FilterInputStream;
         import java.io.DataInputStream;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 
 public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,ConnectionInfoListener {
@@ -133,7 +134,10 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         {
             try {
                 find();
+
             } catch (SocketException e) {
+                e.printStackTrace();
+            } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
 
@@ -181,8 +185,12 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         }
     }
 
-    public void find() throws SocketException {
+    public void find() throws SocketException, UnknownHostException {
+
         /*mManager.discoverPeers(channel, new
+=======
+       /* mManager.discoverPeers(channel, new
+>>>>>>> 137d2537aaa30aa05dc9d2edd52e820c71856a36
                 WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
@@ -197,6 +205,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 }); */
         Toast.makeText(WifiP2PActivity.this, "envoie", Toast.LENGTH_SHORT).show();
         Sender envoie = new Sender("bonjour JM");
+        envoie.send();
     }
 
     @Override

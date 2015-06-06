@@ -32,13 +32,9 @@ public class Sender {
 
     public void send() throws UnknownHostException {
         InetAddress adr = InetAddress.getByName("224.0.0.1");
+        InetAddress moi= socket.getLocalAddress();
         byte[] data = new byte[message.length()];
-        Log.v("Nous", "mon message "+message+ " adresse multicast "+adr );
-        if (socket.isConnected()) {
-            Log.v("NOUS", "la socket existe");
-        }else {
-            Log.v("Nous", "pb ac la socket");
-        }
+        Log.v("Nous", "mon message "+message+ " adresse multicast "+adr + " mon adresse a moi " + moi);
     }
 
 

@@ -27,6 +27,7 @@ import android.os.AsyncTask;
         import android.view.View;
         import android.widget.AdapterView;
         import android.widget.Button;
+        import android.widget.EditText;
         import android.view.Menu;
         import android.view.MenuItem;
         import android.widget.ListView;
@@ -49,6 +50,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private WifiP2pManager mManager;
     private Button buttonFind;
     private Button buttonsocket;
+    private Button buttonEnvoyer;
+    private EditText messages;
     private Channel channel;
     private WifiP2pDevice device;
     private Button buttonConnect;
@@ -82,6 +85,9 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         this.buttonFind.setOnClickListener(this);
         this.buttonsocket = (Button) this.findViewById(R.id.buttonsocket);
         this.buttonsocket.setOnClickListener(this);
+        this.buttonEnvoyer= (Button)this.findViewById(R.id.buttonEnvoyer);
+        this.buttonEnvoyer.setOnClickListener(this);
+        this.messages=(EditText) this.findViewById(R.id.messages);
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);

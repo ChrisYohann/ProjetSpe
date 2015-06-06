@@ -136,6 +136,13 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
         }
         else if(v==buttonsocket) {
+            try {
+                Receiver recive = new Receiver();
+                Log.d("NOUS", recive.receive());
+            }
+            catch ( IOException e) {
+                
+            }
 
 
         }

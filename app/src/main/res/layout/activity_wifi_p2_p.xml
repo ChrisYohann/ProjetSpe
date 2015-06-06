@@ -38,14 +38,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        >
+        />
     <EditText
         android:id="@+id/messages"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Entrez le message ici"
         android:inputType="textMultiLine"
-        android:lines="5"
+        android:lines="1"
         android:layout_alignParentBottom="true"
         />
     <Button android:layout_width="50dp"
@@ -53,9 +53,10 @@
         android:text="Envoyer"
         android:id="@+id/buttonEnvoyer"
         android:background="#3CB371"
-        android:textSize="50dp"
+        android:textSize="5dp"
         android:textColor="#B0F2B6"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/messages">
     </Button>
 
 

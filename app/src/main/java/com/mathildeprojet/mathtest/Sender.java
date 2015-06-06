@@ -6,6 +6,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.mathildeprojet.mathtest.WifiP2Pconnection;
 
@@ -24,6 +25,7 @@ public class Sender {
 
 
     public Sender(String message) throws SocketException {
+        Log.v("Nous", "j'entre dans sender");
         this.message=message;
         socket=new DatagramSocket();
     }
@@ -31,7 +33,12 @@ public class Sender {
     public void send() throws UnknownHostException {
         InetAddress adr = InetAddress.getByName("224.0.0.1");
         byte[] data = new byte[message.length()];
-        DatagramPacket packet= new DatagramPacket(data,message.length(),adr,8888);
+        Log.v("Nous", "mon message "+message+ " adresse multicast "+adr );
+        if (socket.isConnected()) {
+            Log.v("NOUS", "la socket existe");
+        }else {
+            Log.v("Nous", "pb ac la socket");
+        }
     }
 
 

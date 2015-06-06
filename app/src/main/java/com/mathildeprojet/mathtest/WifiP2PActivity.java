@@ -131,7 +131,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         }
         else if(v == buttonFind)
         {
-            //find();
+            try {
+                find();
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
 
 
         }
@@ -178,7 +182,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     }
 
     public void find() throws SocketException {
-        mManager.discoverPeers(channel, new
+        /*mManager.discoverPeers(channel, new
                 WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
@@ -190,7 +194,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                         Toast.makeText(WifiP2PActivity.this, "Couldnt find peers ",
                                 Toast.LENGTH_SHORT).show();
                     }
-                });
+                }); */
+        Toast.makeText(WifiP2PActivity.this, "envoie", Toast.LENGTH_SHORT).show();
         Sender envoie = new Sender("bonjour JM");
     }
 

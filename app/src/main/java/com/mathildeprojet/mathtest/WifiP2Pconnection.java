@@ -460,7 +460,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 dOut.writeByte(-1);
                 dOut.flush();
 
-                dOut.close();
+
 
 
                 DataInputStream dIn = new DataInputStream(client.getInputStream());
@@ -486,9 +486,11 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                     }
                 }
 
+               // dOut.close();
+               // dIn.close();
 
-                client.close();
-                serverSocket.close();
+             //   client.close();
+              //  serverSocket.close();
 
                 return "reussi" ;
             } catch (IOException e) {
@@ -586,7 +588,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 dOut.writeByte(-1);
                 dOut.flush();
 
-                dOut.close();
+              //  dOut.close();
 
             } catch (IOException e) {
                 Log.d("NOUS", "Erreur coté client: " + e.getMessage());

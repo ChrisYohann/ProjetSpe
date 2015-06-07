@@ -6,7 +6,10 @@ import android.content.BroadcastReceiver;
         import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.DhcpInfo;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 
         import android.net.wifi.WifiInfo;
         import android.net.wifi.WifiManager;
@@ -18,7 +21,8 @@ import android.os.AsyncTask;
         import android.net.wifi.p2p.WifiP2pManager.Channel;
         import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
         import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
-        import android.view.View.OnClickListener;
+import android.os.StrictMode;
+import android.view.View.OnClickListener;
         import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
         import android.support.v7.app.ActionBarActivity;
         import android.os.Bundle;
@@ -34,7 +38,9 @@ import android.os.AsyncTask;
         import android.widget.TextView;
         import android.util.Log;
         import android.widget.Toast;
-        import 	java.net.InetSocketAddress;
+
+import java.net.DatagramPacket;
+import 	java.net.InetSocketAddress;
         import java.io.IOException;
         import java.net.ServerSocket;
         import java.net.Socket;
@@ -44,6 +50,12 @@ import android.os.AsyncTask;
         import java.io.InputStream;
         import  java.io.FilterInputStream;
         import java.io.DataInputStream;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -61,12 +73,17 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private Context context;
     private View view;
     WifiP2pDeviceList peers;
+    DatagramSocket socket;
     private IntentFilter filtre = new IntentFilter();
+    private static Integer localPort,remotePort;
+    private static String destIp;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_p2_p);
         context = getApplicationContext();
@@ -93,6 +110,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
+        Thread receiver = new Thread(new SocketListener());
+        receiver.start();
+
+
+
     }
 
     /* register the broadcast receiver with the intent values to be matched */
@@ -126,26 +148,16 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     @Override
     public void onClick(View v) {
-        if(v == buttonConnect)
+         if(v == buttonFind)
         {
-            //n'existe plus
-        }
-        else if(v == buttonFind)
-        {
-            try {
-                find();
-
-            } catch (SocketException e) {
-                e.printStackTrace();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-
+            Thread sender = new Thread(new SocketSender());
+            sender.start();
 
         }
         else if(v==buttonsocket) {
             try {
-                Receiver recive = new Receiver();
+                Log.d("NOUS"," bouton socket");
+                Receiver recive = new Receiver(context);
                 Log.d("NOUS", recive.receive());
             }
             catch ( IOException e) {
@@ -187,11 +199,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     public void find() throws SocketException, UnknownHostException {
 
-        /*mManager.discoverPeers(channel, new
-=======
-       /* mManager.discoverPeers(channel, new
->>>>>>> 137d2537aaa30aa05dc9d2edd52e820c71856a36
-                WifiP2pManager.ActionListener() {
+
+       /* mManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
                         Toast.makeText(WifiP2PActivity.this, "Finding Peers", Toast.LENGTH_SHORT).show();
@@ -204,7 +213,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 }); */
         Toast.makeText(WifiP2PActivity.this, "envoie", Toast.LENGTH_SHORT).show();
-        Sender envoie = new Sender("bonjour JM");
+        Sender envoie = new Sender("bonjour JM", context);
         try {
             envoie.send();
         } catch ( IOException e) {
@@ -266,4 +275,120 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     }
 
 
+
+    class SocketListener implements Runnable
+    {
+        String str;
+
+        public void run()
+        {
+            DatagramPacket packet;
+            byte[] buf = new byte[256];
+            Log.i("Socket Thread ", "Thread running");
+
+            try
+            {
+                Log.i("Socket Thread ", "Dans le try");
+                socket = new DatagramSocket(8888);
+                Log.d("BONJOUR","bonjour: " );
+
+                while (true)
+                {
+
+
+                    packet = new DatagramPacket(buf, buf.length);
+                    Log.i("Socket Thread ", "avant le receive");
+                    socket.receive(packet);
+                    Log.i("Socket Thread ", "Apres");
+
+                    String s = new String(packet.getData(),packet.getOffset(),packet.getLength());
+
+                    Log.d("BONJOUR","message reçu: " + s);
+
+
+
+
+                }
+            } catch (IOException e) {
+                Log.i("Socket Thread ", "Dans le catch");
+                Log.e(getClass().getName(), e.getMessage());
+            }
+            Log.i("Socket Thread ", "Après try catch");
+        }
+    }
+
+    class SocketSender implements Runnable
+    {
+        String str;
+        String username ="JM";
+
+        @Override
+        public void run()
+        {
+
+            String s= null;
+            final EditText editTextSender = (EditText) findViewById(R.id.messages);
+            try
+            {
+                s = username +" : " + editTextSender.getText().toString();
+                Log.d("Bonjour", s);
+            }
+            catch (Exception e)
+            {
+                Log.i("Socket Sender ",e.getMessage());
+            }
+
+
+
+            //DatagramSocket socket;
+            try
+            {
+                DatagramSocket msock = new DatagramSocket(8888);
+
+                msock.setBroadcast(true);
+
+                byte[] buf = new byte[256];
+
+                buf = s.getBytes ();
+                InetAddress address = InetAddress.getByName ("192.168.0.16");
+                DatagramPacket packet = new DatagramPacket (buf, buf.length, address, 8888);
+                Log.i("Socket Sender", "About to send message" + getBroadcastAddress());
+                msock.send(packet);
+                Log.i("Socket Sender", "Sent message");
+
+
+
+
+            }
+            catch (SocketException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            catch (UnknownHostException e2)
+            {
+                // TODO Auto-generated catch block
+                e2.printStackTrace();
+            }
+            catch (IOException e3) {
+                // TODO Auto-generated catch block
+                e3.printStackTrace();
+            }
+
+
+        }
+
+    }
+
+    InetAddress getBroadcastAddress() throws IOException {
+        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        DhcpInfo dhcp = wifi.getDhcpInfo();
+        // handle null somehow
+
+        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+        byte[] quads = new byte[4];
+        for (int k = 0; k < 4; k++)
+            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+        return InetAddress.getByAddress(quads);
+    }
 }

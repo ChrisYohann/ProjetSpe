@@ -11,6 +11,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
+import java.net.Inet6Address;
+import java.net.NetworkInterface;
+import java.net.InetAddress;
+
         import android.net.wifi.WifiInfo;
         import android.net.wifi.WifiManager;
         import android.net.wifi.p2p.WifiP2pConfig;
@@ -58,6 +62,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 
 public class WifiP2PActivity extends Activity implements ChannelListener,OnClickListener,ConnectionInfoListener {
@@ -110,11 +115,29 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
-        Thread receiver = new Thread(new SocketListener());
-        receiver.start();
+
+        Log.d("NOUS", getLocalIpAddress());
+        /*Thread receiver = new Thread(new SocketListener());
+        receiver.start();*/
+        Thread yoop = new Thread(new SocketListener());
+        yoop.start();
 
 
+    }
 
+    private String getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) { return inetAddress.getHostAddress().toString(); }
+                }
+            }
+        } catch (SocketException ex) {
+            Log.e("ServerActivity", ex.toString());
+        }
+        return null;
     }
 
     /* register the broadcast receiver with the intent values to be matched */
@@ -287,9 +310,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
             Log.i("Socket Thread ", "Thread running");
 
             try
-            {
+            {   Inet6Address address = (Inet6Address)InetAddress.getByName ("fe80::983b:16ff:feb3:a5f7");
                 Log.i("Socket Thread ", "Dans le try");
-                socket = new DatagramSocket(8888);
+                socket = new DatagramSocket(8888,InetAddress.getByName("0.0.0.0"));
+                socket.setBroadcast(true);
+
                 Log.d("BONJOUR","bonjour: " );
 
                 while (true)
@@ -303,7 +328,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
                     String s = new String(packet.getData(),packet.getOffset(),packet.getLength());
 
-                    Log.d("BONJOUR","message reçu: " + s);
+                    Log.d("BONJOUR","message reçu: " + s + "port : " + packet.getPort() + "host add: " + packet.getAddress().getHostAddress());
 
 
 
@@ -343,17 +368,17 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
             //DatagramSocket socket;
             try
             {
-                DatagramSocket msock = new DatagramSocket(8888);
+                DatagramSocket msock = new DatagramSocket();
 
-                msock.setBroadcast(true);
+                socket.setBroadcast(true);
 
                 byte[] buf = new byte[256];
 
                 buf = s.getBytes ();
-                InetAddress address = InetAddress.getByName ("192.168.0.16");
-                DatagramPacket packet = new DatagramPacket (buf, buf.length, address, 8888);
-                Log.i("Socket Sender", "About to send message" + getBroadcastAddress());
-                msock.send(packet);
+                Inet6Address address = (Inet6Address)InetAddress.getByName ("fe80::983b:16ff:feb3:a5f7%p2p0");
+                DatagramPacket packet = new DatagramPacket (buf, buf.length, (Inet6Address)InetAddress.getByName (getLocalIpAddress()), 8888);
+                Log.i("Socket Sender", "About to send message" + getBroadcastAddress().getHostAddress());
+                socket.send(packet);
                 Log.i("Socket Sender", "Sent message");
 
 

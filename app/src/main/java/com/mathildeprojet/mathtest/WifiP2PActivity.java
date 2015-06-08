@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
 import java.net.Inet6Address;
+import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.InetAddress;
 
@@ -76,8 +77,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private Button buttonConnect;
     private WifiP2Pconnection mReceiver = null;
     private Context context;
+    private InetAddress group;
     private View view;
     WifiP2pDeviceList peers;
+    MulticastSocket multisocket;
+    NetworkInterface inter = null;
     DatagramSocket socket;
     private IntentFilter filtre = new IntentFilter();
     private static Integer localPort,remotePort;
@@ -116,11 +120,27 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
 
+        try {
+        Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
+
+        while (enumeration.hasMoreElements()) {
+            NetworkInterface eth0 = null;
+            eth0 = enumeration.nextElement();
+
+                Log.d("net", "interface : " + eth0.toString());
+
+
+
+        }
+        }
+        catch (SocketException e) {
+            e.printStackTrace();;
+        }
         Log.d("NOUS", getLocalIpAddress());
-        /*Thread receiver = new Thread(new SocketListener());
-        receiver.start();*/
-        Thread yoop = new Thread(new SocketListener());
-        yoop.start();
+        Thread receiver = new Thread(new SocketListener());
+        receiver.start();
+      /*  Thread yoop = new Thread(new SocketListener());
+        yoop.start();*/
 
 
     }
@@ -178,14 +198,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
         }
         else if(v==buttonsocket) {
-            try {
-                Log.d("NOUS"," bouton socket");
-                Receiver recive = new Receiver(context);
-                Log.d("NOUS", recive.receive());
-            }
-            catch ( IOException e) {
-                
-            }
+
 
 
         }
@@ -305,14 +318,22 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
         public void run()
         {
+            WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+            if(wifi != null){
+                WifiManager.MulticastLock lock = wifi.createMulticastLock("Log_Tag");
+                lock.acquire();
+            }
+            try {
+
+
+
             DatagramPacket packet;
             byte[] buf = new byte[256];
             Log.i("Socket Thread ", "Thread running");
 
-            try
-            {   Inet6Address address = (Inet6Address)InetAddress.getByName ("fe80::983b:16ff:feb3:a5f7");
+             // Inet6Address address = (Inet6Address)InetAddress.getByName ("fe80::983b:16ff:feb3:a5f7");
                 Log.i("Socket Thread ", "Dans le try");
-                socket = new DatagramSocket(8888,InetAddress.getByName("0.0.0.0"));
+                socket = new DatagramSocket(8888);
                 socket.setBroadcast(true);
 
                 Log.d("BONJOUR","bonjour: " );
@@ -351,6 +372,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         public void run()
         {
 
+
+
             String s= null;
             final EditText editTextSender = (EditText) findViewById(R.id.messages);
             try
@@ -368,15 +391,21 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
             //DatagramSocket socket;
             try
             {
-                DatagramSocket msock = new DatagramSocket();
+                /*group = InetAddress.getByName("FF01:0:0:0:0:0:0:101 ");
+                multisocket = new MulticastSocket(8888);
+                multisocket.joinGroup(new InetSocketAddress(group, 8888), inter);*/
 
                 socket.setBroadcast(true);
 
                 byte[] buf = new byte[256];
+                WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                WifiManager.MulticastLock multicastLock = wm.createMulticastLock("mylock");
+
+                multicastLock.acquire();
 
                 buf = s.getBytes ();
-                Inet6Address address = (Inet6Address)InetAddress.getByName ("fe80::983b:16ff:feb3:a5f7%p2p0");
-                DatagramPacket packet = new DatagramPacket (buf, buf.length, (Inet6Address)InetAddress.getByName (getLocalIpAddress()), 8888);
+                InetAddress address = InetAddress.getByName ("239.192.0.0");
+                DatagramPacket packet = new DatagramPacket (buf, buf.length, address, 8888);
                 Log.i("Socket Sender", "About to send message" + getBroadcastAddress().getHostAddress());
                 socket.send(packet);
                 Log.i("Socket Sender", "Sent message");

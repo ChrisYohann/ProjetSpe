@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
+import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
@@ -83,10 +84,10 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     MulticastSocket multisocket;
     NetworkInterface inter = null;
     DatagramSocket socket;
+    int IP;
     private IntentFilter filtre = new IntentFilter();
-    private static Integer localPort,remotePort;
+    private static Integer localPort, remotePort;
     private static String destIp;
-
 
 
     @Override
@@ -97,7 +98,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         setContentView(R.layout.activity_wifi_p2_p);
         context = getApplicationContext();
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        Looper looper= getMainLooper();
+        Looper looper = getMainLooper();
 //on d�finit les actions du filtres, on ne s'occupe que de ces actions
         filtre.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         filtre.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -106,35 +107,47 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         this.channel = mManager.initialize(context, looper, null);
         //initialisation de la connection
         registerReceiver(mReceiver, filtre);
-        mReceiver=new WifiP2Pconnection(context, mManager,channel,this);
-       // this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
+        mReceiver = new WifiP2Pconnection(context, mManager, channel, this);
+        // this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
         //this.buttonConnect.setOnClickListener(this);
-        this.buttonFind = (Button)this.findViewById(R.id.buttonFind);
+        this.buttonFind = (Button) this.findViewById(R.id.buttonFind);
         this.buttonFind.setOnClickListener(this);
         this.buttonsocket = (Button) this.findViewById(R.id.buttonsocket);
         this.buttonsocket.setOnClickListener(this);
-        this.buttonEnvoyer= (Button)this.findViewById(R.id.buttonEnvoyer);
+        this.buttonEnvoyer = (Button) this.findViewById(R.id.buttonEnvoyer);
         this.buttonEnvoyer.setOnClickListener(this);
-        this.messages=(EditText) this.findViewById(R.id.messages);
+        this.messages = (EditText) this.findViewById(R.id.messages);
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
 
         try {
-        Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
+            Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
 
-        while (enumeration.hasMoreElements()) {
-            NetworkInterface eth0 = null;
-            eth0 = enumeration.nextElement();
+            while (enumeration.hasMoreElements()) {
+                NetworkInterface eth0 = null;
+                eth0 = enumeration.nextElement();
+                String myIP = "";
 
                 Log.d("net", "interface : " + eth0.toString());
+                Enumeration<InetAddress> en2 = eth0.getInetAddresses();
+                while (en2.hasMoreElements()) {
+                    InetAddress inet = en2.nextElement();
+                    if (!inet.isLoopbackAddress() && inet instanceof Inet4Address) {
+                        myIP = inet.getHostAddress();
+                    }
+
+                    if (eth0.getName().length()>2&&eth0.getName().substring(0,3).equals("p2p") && myIP != "0.0.0.0" && myIP != null) {
+
+                        inter = eth0;
+                    }
+                }
 
 
-
-        }
-        }
-        catch (SocketException e) {
-            e.printStackTrace();;
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+            ;
         }
         Log.d("NOUS", getLocalIpAddress());
         Thread receiver = new Thread(new SocketListener());
@@ -147,11 +160,13 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     private String getLocalIpAddress() {
         try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) { return inetAddress.getHostAddress().toString(); }
+                    if (!inetAddress.isLoopbackAddress()) {
+                        return inetAddress.getHostAddress().toString();
+                    }
                 }
             }
         } catch (SocketException ex) {
@@ -167,6 +182,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         Log.v("NOUS", "on rentre bien dans OnResume");
         registerReceiver(mReceiver, filtre);
     }
+
     /* unregister the broadcast receiver */
     @Override
     protected void onPause() {
@@ -185,20 +201,32 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         }
     }*/
 
-    public void closeConnections(View v){
+    public void closeConnections(View v) {
         mReceiver.closeConnections();
     }
 
     @Override
     public void onClick(View v) {
-         if(v == buttonFind)
-        {
+        if (v == buttonFind) {
             Thread sender = new Thread(new SocketSender());
             sender.start();
+         /*    mManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(WifiP2PActivity.this, "Finding Peers", Toast.LENGTH_SHORT).show();
+                    }
 
-        }
-        else if(v==buttonsocket) {
+                    @Override
+                    public void onFailure(int reasonCode) {
+                        Toast.makeText(WifiP2PActivity.this, "Couldnt find peers ",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });*/
 
+        } else if (v == buttonsocket) {
+
+            Thread yoo = new Thread(new SocketListener());
+            yoo.start();
 
 
         }
@@ -209,11 +237,9 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         mReceiver.tryConnection(position);
     }*/
 
-    public void connect(WifiP2pDevice device)
-    {
+    public void connect(WifiP2pDevice device) {
         WifiP2pConfig config = new WifiP2pConfig();
-        if(device != null)
-        {
+        if (device != null) {
             config.deviceAddress = device.deviceAddress;
             mManager.connect(channel, config, new ActionListener() {
 
@@ -226,9 +252,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     //fail
                 }
             });
-        }
-        else
-        {
+        } else {
             Toast.makeText(WifiP2PActivity.this, "Couldn't connect, device is not found", Toast.LENGTH_SHORT).show();
         }
     }
@@ -236,23 +260,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     public void find() throws SocketException, UnknownHostException {
 
 
-       /* mManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(WifiP2PActivity.this, "Finding Peers", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(int reasonCode) {
-                        Toast.makeText(WifiP2PActivity.this, "Couldnt find peers ",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }); */
         Toast.makeText(WifiP2PActivity.this, "envoie", Toast.LENGTH_SHORT).show();
         Sender envoie = new Sender("bonjour JM", context);
         try {
             envoie.send();
-        } catch ( IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -266,7 +278,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     public void onChannelDisconnected() {
 
     }
-
 
 
     public void receiveSocket() {
@@ -311,47 +322,42 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     }
 
 
-
-    class SocketListener implements Runnable
-    {
+    class SocketListener implements Runnable {
         String str;
 
-        public void run()
-        {
-            WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
-            if(wifi != null){
+        public void run() {
+            WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            if (wifi != null) {
                 WifiManager.MulticastLock lock = wifi.createMulticastLock("Log_Tag");
                 lock.acquire();
             }
             try {
 
 
+                DatagramPacket packet;
+                byte[] buf = new byte[256];
+                Log.i("Socket Thread ", "Thread running");
 
-            DatagramPacket packet;
-            byte[] buf = new byte[256];
-            Log.i("Socket Thread ", "Thread running");
-
-             // Inet6Address address = (Inet6Address)InetAddress.getByName ("fe80::983b:16ff:feb3:a5f7");
+                // Inet6Address address = (Inet6Address)InetAddress.getByName ("fe80::983b:16ff:feb3:a5f7");
                 Log.i("Socket Thread ", "Dans le try");
-                socket = new DatagramSocket(8888);
-                socket.setBroadcast(true);
+                socket = new DatagramSocket();
+                //      multisocket.joinGroup(InetAddress.getByName("192.168.49.180"));
+                //     multisocket.joinGroup(InetAddress.getByName("192.168.49.1"));
 
-                Log.d("BONJOUR","bonjour: " );
+                Log.d("BONJOUR", "bonjour: ");
 
-                while (true)
-                {
+                while (true) {
 
 
                     packet = new DatagramPacket(buf, buf.length);
+                    multisocket = new MulticastSocket(8888);
                     Log.i("Socket Thread ", "avant le receive");
-                    socket.receive(packet);
+                    multisocket.receive(packet);
                     Log.i("Socket Thread ", "Apres");
 
-                    String s = new String(packet.getData(),packet.getOffset(),packet.getLength());
+                    String s = new String(packet.getData(), packet.getOffset(), packet.getLength());
 
-                    Log.d("BONJOUR","message reçu: " + s + "port : " + packet.getPort() + "host add: " + packet.getAddress().getHostAddress());
-
-
+                    Log.d("BONJOUR", "message reçu: " + s + "port : " + packet.getPort() + "host add: " + packet.getAddress().getHostAddress());
 
 
                 }
@@ -360,89 +366,143 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 Log.e(getClass().getName(), e.getMessage());
             }
             Log.i("Socket Thread ", "Après try catch");
-        }
-    }
-
-    class SocketSender implements Runnable
-    {
-        String str;
-        String username ="JM";
-
-        @Override
-        public void run()
-        {
-
-
-
-            String s= null;
-            final EditText editTextSender = (EditText) findViewById(R.id.messages);
-            try
-            {
-                s = username +" : " + editTextSender.getText().toString();
-                Log.d("Bonjour", s);
+/*
+  //          WifiManager wim = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            if (wim != null) {
+                WifiManager.MulticastLock mcLock = wim.createMulticastLock("yo");
+                mcLock.acquire();
             }
-            catch (Exception e)
-            {
-                Log.i("Socket Sender ",e.getMessage());
+
+            byte[] buffer = new byte[4096];
+            DatagramPacket rPacket = new DatagramPacket(buffer, buffer.length);
+            MulticastSocket rSocket;
+
+            try {
+                rSocket = new MulticastSocket(8888);
+            } catch (IOException e) {
+                Log.d("socket", "Impossible to create a new MulticastSocket on port " + 8888);
+                e.printStackTrace();
+                return;
             }
 
 
-
-            //DatagramSocket socket;
-            try
-            {
-                /*group = InetAddress.getByName("FF01:0:0:0:0:0:0:101 ");
-                multisocket = new MulticastSocket(8888);
-                multisocket.joinGroup(new InetSocketAddress(group, 8888), inter);*/
-
-                socket.setBroadcast(true);
-
-                byte[] buf = new byte[256];
-                WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                WifiManager.MulticastLock multicastLock = wm.createMulticastLock("mylock");
-
-                multicastLock.acquire();
-
-                buf = s.getBytes ();
-                InetAddress address = InetAddress.getByName ("239.192.0.0");
-                DatagramPacket packet = new DatagramPacket (buf, buf.length, address, 8888);
-                Log.i("Socket Sender", "About to send message" + getBroadcastAddress().getHostAddress());
-                socket.send(packet);
-                Log.i("Socket Sender", "Sent message");
-
-
-
-
-            }
-            catch (SocketException e1)
-            {
-                // TODO Auto-generated catch block
+            try {
+                rSocket.receive(rPacket);
+            } catch (IOException e1) {
+                Log.d("yyo", "There was a problem receiving the incoming message.");
                 e1.printStackTrace();
-            }
-            catch (UnknownHostException e2)
-            {
-                // TODO Auto-generated catch block
-                e2.printStackTrace();
-            }
-            catch (IOException e3) {
-                // TODO Auto-generated catch block
-                e3.printStackTrace();
+
             }
 
+            String s = new String(rPacket.getData(), rPacket.getOffset(), rPacket.getLength());
+
+            Log.d("BONJOUR", "message reçu: " + s + "port : " + rPacket.getPort() + "host add: " + rPacket.getAddress().getHostAddress());
+
+  //      }*/
+        }
+    }
+
+        class SocketSender implements Runnable {
+            String str;
+            String username = "JM";
+
+            @Override
+            public void run() {
+
+
+                String s = null;
+                final EditText editTextSender = (EditText) findViewById(R.id.messages);
+                try {
+                    s = username + " : " + editTextSender.getText().toString();
+                    Log.d("Bonjour", s);
+                } catch (Exception e) {
+                    Log.i("Socket Sender ", e.getMessage());
+                }
+
+
+                //DatagramSocket socket;
+                try {
+                 /*   group = InetAddress.getByName("FF01:0:0:0:0:0:0:101 ");
+                    multisocket = new MulticastSocket(8888);
+                    multisocket.joinGroup(new InetSocketAddress(group, 8888), inter);*/
+
+//                socket.setBroadcast(true);
+
+
+
+                    WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                    WifiManager.MulticastLock multicastLock = wm.createMulticastLock("mylock");
+
+                    multicastLock.acquire();
+                    byte[] buf = new byte[256];
+                    buf = s.getBytes();
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName("192.168.49.98"), 8888);
+                    InetAddress address = InetAddress.getByName("192.168.49.255");
+                     packet = new DatagramPacket(buf, buf.length, address,8888);
+                    Log.i("Socket Sender", "About to send message" + multisocket.getLocalSocketAddress());
+                    socket.send(packet);
+                    Log.i("Socket Sender", "Sent message");
+
+
+                } catch (SocketException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (UnknownHostException e2) {
+                    // TODO Auto-generated catch block
+                    e2.printStackTrace();
+                } catch (IOException e3) {
+                    // TODO Auto-generated catch block
+                    e3.printStackTrace();
+                }
+/*
+            // Create the send socket
+  //          if(socket == null) {
+                try {
+                    socket = new DatagramSocket();
+                } catch (SocketException e) {
+                    Log.d("yop", "There was a problem creating the sending socket. Aborting.");
+                    e.printStackTrace();
+
+                }
+            }
+
+            // Build the packet
+            byte data[] = s.getBytes();
+            DatagramPacket packet = new DatagramPacket(data, data.length);
+
+
+
+            try {
+                packet = new DatagramPacket(data, data.length, InetAddress.getByName("192.168.49.1"),8888);
+            } catch (UnknownHostException e) {
+                Log.d("yop", "It seems that " + "192.168.49.1" + " is not a valid ip! Aborting.");
+                e.printStackTrace();
+
+            }
+
+            try {
+                socket.send(packet);
+            } catch (IOException e) {
+                Log.d("yop", "There was an error sending the UDP packet. Aborted.");
+                e.printStackTrace();
+
+            }
+            Log.d("Socket sender :", "Message Sent");
+*/
+            }
 
         }
 
-    }
+        InetAddress getBroadcastAddress() throws IOException {
+            WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            DhcpInfo dhcp = wifi.getDhcpInfo();
+            // handle null somehow
 
-    InetAddress getBroadcastAddress() throws IOException {
-        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        DhcpInfo dhcp = wifi.getDhcpInfo();
-        // handle null somehow
+            int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+            byte[] quads = new byte[4];
+            for (int k = 0; k < 4; k++)
+                quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+            return InetAddress.getByAddress(quads);
+        }
 
-        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-        byte[] quads = new byte[4];
-        for (int k = 0; k < 4; k++)
-            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-        return InetAddress.getByAddress(quads);
-    }
 }

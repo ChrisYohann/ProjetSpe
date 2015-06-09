@@ -28,6 +28,7 @@ import java.net.InetAddress;
         import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
         import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.os.StrictMode;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View.OnClickListener;
         import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
         import android.support.v7.app.ActionBarActivity;
@@ -72,10 +73,11 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private Button buttonFind;
     private Button buttonsocket;
     private Button buttonEnvoyer;
+    private TextView boitedialogue;
     private EditText messages;
     private Channel channel;
     private WifiP2pDevice device;
-    private Button buttonConnect;
+
     private WifiP2Pconnection mReceiver = null;
     private Context context;
     private InetAddress group;
@@ -88,6 +90,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private IntentFilter filtre = new IntentFilter();
     private static Integer localPort, remotePort;
     private static String destIp;
+    private String textbox="";
 
 
     @Override
@@ -107,19 +110,23 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         this.channel = mManager.initialize(context, looper, null);
         //initialisation de la connection
         registerReceiver(mReceiver, filtre);
-        mReceiver = new WifiP2Pconnection(context, mManager, channel, this);
+      //  mReceiver = new WifiP2Pconnection(context, mManager, channel, this);
         // this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
         //this.buttonConnect.setOnClickListener(this);
-        this.buttonFind = (Button) this.findViewById(R.id.buttonFind);
-        this.buttonFind.setOnClickListener(this);
-        this.buttonsocket = (Button) this.findViewById(R.id.buttonsocket);
-        this.buttonsocket.setOnClickListener(this);
+
         this.buttonEnvoyer = (Button) this.findViewById(R.id.buttonEnvoyer);
         this.buttonEnvoyer.setOnClickListener(this);
         this.messages = (EditText) this.findViewById(R.id.messages);
         //peerlist = (ListView)findViewById(R.id.peer_list);
         //peerlist.setAdapter(wifiConnection.adapter);
         //peerlist.setOnItemClickListener(this);
+        boitedialogue = (TextView) findViewById(R.id.boite);
+        boitedialogue.setMovementMethod(new ScrollingMovementMethod());
+
+        /*boitedialogue.setText("JM (01:09): Bonjour comment ça va ?");
+        String yop = boitedialogue.getText().toString();
+        boitedialogue.setText(yop + "\nJM (02:00): Tres bien merci");
+*/
 
         try {
             Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
@@ -207,9 +214,14 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
     @Override
     public void onClick(View v) {
-        if (v == buttonFind) {
+        if (v == buttonEnvoyer) {
             Thread sender = new Thread(new SocketSender());
             sender.start();
+            EditText editTextSender = (EditText) findViewById(R.id.messages);
+            editTextSender.setText("");
+
+
+
          /*    mManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
@@ -222,12 +234,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                                 Toast.LENGTH_SHORT).show();
                     }
                 });*/
-
-        } else if (v == buttonsocket) {
-
-            Thread yoo = new Thread(new SocketListener());
-            yoo.start();
-
 
         }
 
@@ -358,6 +364,14 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     String s = new String(packet.getData(), packet.getOffset(), packet.getLength());
 
                     Log.d("BONJOUR", "message reçu: " + s + "port : " + packet.getPort() + "host add: " + packet.getAddress().getHostAddress());
+                    textbox = packet.getAddress().getHostName() + " : " + s;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String stg = boitedialogue.getText().toString() + "\n" + textbox;
+                            boitedialogue.setText(stg);
+                        }
+                    });
 
 
                 }
@@ -404,7 +418,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
         class SocketSender implements Runnable {
             String str;
-            String username = "JM";
+            String username = "JM :";
 
             @Override
             public void run() {
@@ -413,7 +427,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 String s = null;
                 final EditText editTextSender = (EditText) findViewById(R.id.messages);
                 try {
-                    s = username + " : " + editTextSender.getText().toString();
+                    s = username + editTextSender.getText().toString();
+
                     Log.d("Bonjour", s);
                 } catch (Exception e) {
                     Log.i("Socket Sender ", e.getMessage());
@@ -504,5 +519,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
             return InetAddress.getByAddress(quads);
         }
+
 
 }

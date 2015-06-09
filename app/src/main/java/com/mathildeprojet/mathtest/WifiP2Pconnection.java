@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.content.IntentFilter;
@@ -121,14 +122,25 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 Log.v("NOUS", "le wifi est activé !");
-                //TODO: ajout en dernier
-                Toast.makeText(mActivity, "Wifi direct is enabled", Toast.LENGTH_LONG).show();
+
 
                 // Wifi P2P is enabled
             } else {
                 Log.v("NOUS", "le wifi n'est pas activé");
-                //TODO:nouveau
-                Toast.makeText(mActivity, "wifi direct is disabled", Toast.LENGTH_LONG).show();
+
+                AlertDialog.Builder adb1 = new AlertDialog.Builder(mActivity);
+
+                //On donne un titre à l'AlertDialog
+                adb1.setTitle("Attention");
+                adb1.setMessage("Veuillez activer votre connexion Wi-Fi puis relancer l'application");
+                //Bouton du dialogue
+                adb1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                adb1.show();
 
                 // Wi-Fi P2P is not enabled
             }

@@ -52,15 +52,7 @@
         android:lines="1"
         android:layout_alignBottom="@+id/boite"
         />
-    <EditText
-        android:id="@+id/pseudo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Pseudo"
-        android:inputType="textMultiLine"
-        android:lines="1"
-        android:layout_below="@+id/buttonpseudo"
-        />
+
     <Button android:layout_width="100dp"
         android:layout_height="30dp"
         android:text="Envoyer"
@@ -72,17 +64,6 @@
         android:layout_alignRight="@+id/messages">
     </Button>
 
-    <Button android:layout_width="100dp"
-        android:layout_height="30dp"
-
-        android:text="Valider"
-        android:id="@+id/buttonpseudo"
-        android:background="#3CB371"
-
-        android:textColor="#B0F2B6"
-
-        android:layout_toLeftOf="@+id/chaton">
-    </Button>
 
 
 

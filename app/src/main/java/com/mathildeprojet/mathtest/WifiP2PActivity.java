@@ -91,6 +91,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
     private static Integer localPort, remotePort;
     private static String destIp;
     private String textbox="";
+    private String pseudo="";
 
 
     @Override
@@ -110,7 +111,19 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         this.channel = mManager.initialize(context, looper, null);
         //initialisation de la connection
         registerReceiver(mReceiver, filtre);
-      //  mReceiver = new WifiP2Pconnection(context, mManager, channel, this);
+        mReceiver = new WifiP2Pconnection(context, mManager, channel, this);
+        mManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+              //  Toast.makeText(WifiP2PActivity.this, "Finding Peers", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int reasonCode) {
+              //  Toast.makeText(WifiP2PActivity.this, "Couldnt find peers ",
+              //          Toast.LENGTH_SHORT).show();
+            }
+        });
         // this.buttonConnect = (Button) this.findViewById(R.id.buttonConnect);
         //this.buttonConnect.setOnClickListener(this);
 
@@ -122,6 +135,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         //peerlist.setOnItemClickListener(this);
         boitedialogue = (TextView) findViewById(R.id.boite);
         boitedialogue.setMovementMethod(new ScrollingMovementMethod());
+        Intent i  = getIntent();
+        pseudo = i.getStringExtra("pseudo");
 
         /*boitedialogue.setText("JM (01:09): Bonjour comment ça va ?");
         String yop = boitedialogue.getText().toString();
@@ -156,7 +171,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
             e.printStackTrace();
             ;
         }
-        Log.d("NOUS", getLocalIpAddress());
+
         Thread receiver = new Thread(new SocketListener());
         receiver.start();
       /*  Thread yoop = new Thread(new SocketListener());
@@ -222,7 +237,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
 
 
-         /*    mManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+             mManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
                         Toast.makeText(WifiP2PActivity.this, "Finding Peers", Toast.LENGTH_SHORT).show();
@@ -233,7 +248,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                         Toast.makeText(WifiP2PActivity.this, "Couldnt find peers ",
                                 Toast.LENGTH_SHORT).show();
                     }
-                });*/
+                });
 
         }
 
@@ -364,7 +379,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     String s = new String(packet.getData(), packet.getOffset(), packet.getLength());
 
                     Log.d("BONJOUR", "message reçu: " + s + "port : " + packet.getPort() + "host add: " + packet.getAddress().getHostAddress());
-                    textbox = packet.getAddress().getHostName() + " : " + s;
+                    textbox = s;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -372,6 +387,8 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                             boitedialogue.setText(stg);
                         }
                     });
+
+
 
 
                 }
@@ -418,8 +435,6 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
         class SocketSender implements Runnable {
             String str;
-            String username = "JM :";
-
             @Override
             public void run() {
 
@@ -427,7 +442,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 String s = null;
                 final EditText editTextSender = (EditText) findViewById(R.id.messages);
                 try {
-                    s = username + editTextSender.getText().toString();
+                    s = pseudo + ": " + editTextSender.getText().toString();
 
                     Log.d("Bonjour", s);
                 } catch (Exception e) {

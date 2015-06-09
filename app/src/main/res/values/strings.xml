@@ -8,4 +8,6 @@
     <string name="Connect">Connect</string>
     <string name="ChatOn">ChatOn</string>
     <string name="ChatOnRoom"></string>
+    <string name="valider">Valider</string>
+    <string name="title_activity_intro">IntroActivity</string>
 </resources>

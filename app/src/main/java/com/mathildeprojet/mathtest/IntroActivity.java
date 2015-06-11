@@ -25,19 +25,6 @@ public class IntroActivity extends ActionBarActivity {
         valider = (Button) findViewById(R.id.buttonpseudo);
         pseudo = (EditText) findViewById(R.id.pseudo);
 
-        AlertDialog.Builder adb1 = new AlertDialog.Builder(this);
-
-        //On donne un titre à l'AlertDialog
-        adb1.setTitle("Avertissement numero 2");
-        adb1.setMessage("Veuillez verifier que votre connexion Wi-Fi est bien activee avant de poursuivre");
-        //Bouton du dialogue
-        adb1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-
-        adb1.show();
 
         //Création de l'AlertDialog
         AlertDialog.Builder adb = new AlertDialog.Builder(this);

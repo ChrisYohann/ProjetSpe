@@ -115,6 +115,10 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
         this.channel = mManager.initialize(context, looper, null);
         //initialisation de la connection
         registerReceiver(mReceiver, filtre);
+        // si vous voulez creer un connexiion p2p entre appareils directement via l'application,
+        // o uvous pouvez l'appeler via un bouton que vous pouvez créer dans l'application
+
+        // WifiP2Pconnection conn = new WifiP2Pconnection(context,mManager,channel,this);
 
         this.buttonEnvoyer = (Button) this.findViewById(R.id.buttonEnvoyer);
         this.buttonEnvoyer.setOnClickListener(this);
@@ -158,7 +162,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     }
                 }
 
-                relais = p2p&&wlan;
+                relais = p2p&&wlan; // le relais doit etre présent sur les 2 interfaces d'echange de messages
 
             }
         } catch (SocketException e) {
@@ -167,7 +171,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
 
         Thread receiver = new Thread(new SocketListener());
         receiver.start();
-
+/*
         mManager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener(){
 
             @Override
@@ -195,7 +199,7 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                 }
             }
 
-        });
+        });*/
 
       /*  Thread yoop = new Thread(new SocketListener());
         yoop.start();*/
@@ -278,16 +282,17 @@ public class WifiP2PActivity extends Activity implements ChannelListener,OnClick
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            // mise à jour de la boite de chat
                             String stg = boitedialogue.getText().toString() + "\n" + textbox;
                             boitedialogue.setText(stg);
                         }
                     });
 
-                    // méthode à revoir si jamais quelqu'un reprend le code
+                    //    /!\  méthode à revoir si jamais quelqu'un reprend le code /!\
 
                     // si jamais device est sur les 2 interfaces ( wlan0 et p2p0 ) => il est dans 2 groupes différents théoriquement
             /*        if (relais) {
-
+                        s = message // celui du'une premiere interface pour renvoyer sur l'autre
                         Thread sender = new Thread(new Sender(s,socket,acti,pseudo));
                         sender.start();
 

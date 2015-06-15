@@ -3,6 +3,7 @@ package com.mathildeprojet.mathtest;
 /**
  * Created by matylde on 28/05/2015.
  */
+
 import android.annotation.TargetApi;
 
 import java.io.DataInputStream;
@@ -10,6 +11,7 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileOutputStream;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,7 +47,7 @@ import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
-import 	java.net.SocketException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +59,7 @@ import java.util.Enumeration;
  * Created by Rafaelle on 21/05/2015.
  */
 
-public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pManager.ChannelListener,
+public class WifiP2Pconnection extends BroadcastReceiver implements WifiP2pManager.ChannelListener,
         WifiP2pManager.ConnectionInfoListener, WifiP2pManager.GroupInfoListener, Parcelable {
 
 
@@ -66,7 +68,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     private Context ctx;
     private Looper lpr;
     AlertDialog.Builder adbldr;
-    public boolean onetime=true;
+    public boolean onetime = true;
 
 
     private WifiP2pManager mManager;
@@ -82,17 +84,18 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     View view;
 
     public String message;
+    boolean go = true; // savoir si le device sur lequel tourne l'appli est group owner
 
-    //TODO: remplacer le TextView connecte par WifiP2PActivity activity !
     public WifiP2Pconnection(Context ctxt, WifiP2pManager manager, Channel channel,
-                             WifiP2PActivity activity){
+                             WifiP2PActivity activity) {
         super();
-        this.ctx=ctxt;
-        this.mChannel=channel;
+        this.ctx = ctxt;
+        this.mChannel = channel;
         this.mManager = manager;
         this.mActivity = activity; //pour relier � l'activit� principale
         adbldr = new AlertDialog.Builder(ctx);
     }
+
     /*
     public WifiP2pDevice getDevice() {
         return device;
@@ -101,24 +104,24 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     public void onReceive(Context context, Intent intent) {
 
         final String action = intent.getAction();
-        message="Coucou Rafi";
+        message = "Bienvenue";
 
         WifiManager wifiMan = (WifiManager) ctx.getSystemService(
                 Context.WIFI_SERVICE);
 
-    	WifiInfo wifiInf = wifiMan.getConnectionInfo();
-    	String myMAC = wifiInf.getMacAddress();
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        String myMAC = wifiInf.getMacAddress();
         info = wifiInf;
-    	if(myMAC != null){
+        if (myMAC != null) {
 
 
             Log.d("NOUS", "l'adresse mac est :" + myMAC);
 
         }
 
-      //  Log.v("NOUS", "on rentre bien dans OnReceive");
+        //  Log.v("NOUS", "on rentre bien dans OnReceive");
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-     //       Log.v("NOUS", "l'etat de la wifi est changé");
+            //       Log.v("NOUS", "l'etat de la wifi est changé");
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 Log.v("NOUS", "le wifi est activé !");
@@ -147,7 +150,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
             // Check to see if Wi-Fi is enabled and notify appropriate activity
         } else {
 
-            
+
             if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
                 Log.v("NOUS", "on a de nouveaux pairs à rechercher");
                 //TODO:nouveau
@@ -161,17 +164,23 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                             Log.v("NOUS", String.format("Appareils autour: %d appareils disponible", peers.getDeviceList().size()));
                             Iterator it = peers.getDeviceList().iterator();
                             WifiP2pConfig config = new WifiP2pConfig();
-                            boolean unefois=true;
+                            boolean unefois = true;
+
                             while (it.hasNext()) {
                                 WifiP2pDevice device = (WifiP2pDevice) it.next();
                                 if (!device.isGroupOwner()) {
-                                    Log.v("NOUS", "Je suis Maître");
+
                                 } else {
-                                    Log.v("NOUS", "Je suis Esclave");
+                                    go = false;
+                                    Log.v("group owner", "Je suis Client");
+                                }
+
+                                if (go) {
+                                    Log.v("group owner", "Je suis GO");
                                 }
 
                                 config.deviceAddress = device.deviceAddress;
-                                mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+                                mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() { // connexion entre les deux devices qui s'etablit
 
                                     @Override
                                     public void onSuccess() {
@@ -179,28 +188,22 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                         mManager.requestConnectionInfo(mChannel, new WifiP2pManager.ConnectionInfoListener() {
                                             @Override
                                             public void onConnectionInfoAvailable(WifiP2pInfo info) {
-                                                //  Log.v("NOUS", "Bonjour et bienvenue conconnection");
-                                                if (info.isGroupOwner) {
+                                                if (go) {
 
-                                                    Log.v("NOUS", "Etablissement connexion du maître)");
-                                                    //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
-                                                    //Serveuur serv = new Serveuur();
-                                                    //serv.setIP(info.groupOwnerAddress);
-                                                    //serv.execute();
+                                                    Log.v("group owner", "Etablissement connexion en tant que maître)");
+
 
                                                 } else {
-                                                    Log.v("NOUS", "Etablissement connexion de l'esclave");
+                                                    Log.v("group owner", "Etablissement connexion en tant qu'esclave");
                                                     //give server a second to setup the server socket
                                                     try {
-                                                        //       Log.v("NOUS", "DANS le try");
+
                                                         Thread.sleep(1000);
                                                     } catch (Exception e) {
                                                         System.out.println(e.toString());
                                                     }
-                                                    //      Log.v("NOUS", "après le catch");
                                                     String myIP = "";
                                                     try {
-                                                        //         Log.v("NOUS", "dans le 2eme try");
                                                         Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
                                                         while (en.hasMoreElements()) {
                                                             NetworkInterface ni = en.nextElement();
@@ -213,22 +216,8 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                                             }
                                                         }
                                                     } catch (SocketException e) {
-                                                        // TODO Auto-generated catch block
                                                         e.printStackTrace();
                                                     }
-                                                    //     Log.v("NOUS", "après le 2eme catch");
-
-
-                                                    //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
-
-                                                    //Client client = new Client(info.groupOwnerAddress);
-                                                    //       Log.v("NOUS", "avant setIP ");
-                                                    //client.setIPserv(info.groupOwnerAddress);
-                                                    Log.v("NOUS", "Début de la connexion de l'esclave à la socket");
-                                                    //client.execute();
-                                                    //       Log.v("NOUS", "après exécute");
-
-
 
                                                 }
 
@@ -244,44 +233,36 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                                 });
 
 
-
                             }
-
-
-                            // DO WHATEVER YOU WANT HERE
-                            // YOU CAN GET ACCESS TO ALL THE DEVICES YOU FOUND FROM peers OBJECT
 
                         }
                     });
 
 
-                                    }
+                }
 
 
                 // Call WifiP2pManager.requestPeers() to get a list of current peers
             } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-              // Log.v("NOUS", "repondre à une nouvelle co ou se deco");
-                //TODO:nouveau
+
                 if (mManager == null) {
                     return;
                 }
                 NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
                 if (networkInfo.isConnected()) {
-                    //TODO: cast ?
+
                     mManager.requestConnectionInfo(mChannel, mActivity);
                 } else {//c'est deconnecté
                 }
                 // Respond to new connection or disconnections
             }
-            Log.v("NOUS", "test data");
-
 
         }
     }
 
 
     //trouve les pairs disponibles
-    public void discoverPeers(){
+    public void discoverPeers() {
         mManager.discoverPeers((WifiP2pManager.Channel) mChannel, new WifiP2pManager.ActionListener() {
 
             @Override
@@ -296,7 +277,7 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
         });
     }
 
-    public void closeConnections(){
+    public void closeConnections() {
         mManager.removeGroup((WifiP2pManager.Channel) mChannel, new WifiP2pManager.ActionListener() {
 
             @Override
@@ -312,7 +293,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
     }
 
 
-
     @Override
     public void onChannelDisconnected() {
 
@@ -320,37 +300,27 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
-        if(info.isGroupOwner){
+        if (info.isGroupOwner) {
 
 
-            //setup the server handshake with the group's IP, port, the device's mac, and the port for the conenction to communicate on
-            /*Serveuur serv = null;
-            try {
-                serv = new Serveuur(info.groupOwnerAddress);
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-            serv.setIP(info.groupOwnerAddress);
-            serv.execute(); */
-
-        }else{
+        } else {
 
             //give server a second to setup the server socket
-            try{
+            try {
                 Thread.sleep(1000);
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.toString());
             }
 
             String myIP = "";
             try {
                 Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
-                while(en.hasMoreElements()){
+                while (en.hasMoreElements()) {
                     NetworkInterface ni = en.nextElement();
                     Enumeration<InetAddress> en2 = ni.getInetAddresses();
-                    while(en2.hasMoreElements()){
+                    while (en2.hasMoreElements()) {
                         InetAddress inet = en2.nextElement();
-                        if(!inet.isLoopbackAddress() && inet instanceof Inet4Address){
+                        if (!inet.isLoopbackAddress() && inet instanceof Inet4Address) {
                             myIP = inet.getHostAddress();
                         }
                     }
@@ -360,12 +330,6 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
                 e.printStackTrace();
             }
 
-
-
-            //setup the client handshake to connect to the server and trasfer the device's MAC, get port for connection's communication
-            //Client client = new Client(info.groupOwnerAddress);
-            //client.setIPserv(info.groupOwnerAddress);
-            //client.execute();
 
         }
     }
@@ -385,251 +349,5 @@ public class WifiP2Pconnection extends BroadcastReceiver implements  WifiP2pMana
 
 
     }
-
-
-   /* public class Serveuur extends AsyncTask<Void, Void, String> {
-
-
-
-        InetAddress IP;
-        InetAddress servaddr;
-        SocketAddress sockaddr;
-        String mes=message;
-
-
-        public Serveuur() {
-
-        }
-
-        public Serveuur(InetAddress seerv) throws UnknownHostException {
-
-            servaddr=seerv;
-            IP=seerv;
-
-        }
-        public void setIP(InetAddress ip) {
-            IP=ip;
-
-
-            servaddr=ip;
-
-
-        }
-
-
-
-        public String doInBackground(Void...params) {
-
-            Log.v("NOUS", "Bonjour socket");
-            try {
-               Log.v("NOUS", "Bonjour socket 2");
-               */
-                /**
-                 * Create a server socket and wait for client connections. This
-                 * call blocks until a connection is accepted from a client
-                 **/
-                /*
-                ServerSocket serverSocket = new ServerSocket(11000,50,servaddr);
-
-                serverSocket.setReuseAddress(true);
-                serverSocket.setSoTimeout(10000);
-                //Port = serverSocket.getLocalPort();
-                //adrr=serverSocket.getInetAddress();
-
-                Log.v("NOUS", "Bonjour socket 3");
-                Log.v("NOUS", "Bonjour socket 7, je suis la socket à l'adresse "+ serverSocket.getLocalSocketAddress() );
-
-
-
-                // serverSocket.bind(new InetSocketAddress(IP,Port));
-
-
-                Log.v("NOUS", "La Socket est prêt à être acceptée");
-                Socket client = serverSocket.accept();
-                sockaddr=serverSocket.getLocalSocketAddress();
-                Log.v("NOUS", "l/'adresse de la socket est" +sockaddr);
-
-
-
-                Log.v("NOUS", "socket créée avec succès");
-                DataOutputStream dOut = new DataOutputStream(client.getOutputStream());
-
-
-// Send first message
-                dOut.writeByte(1);
-                dOut.writeUTF(message);
-                dOut.flush(); // Send off the data
-
-// Send the second message
-                dOut.writeByte(2);
-                dOut.writeUTF("This is the second type of message.");
-                dOut.flush(); // Send off the data
-
-// Send the third message
-                dOut.writeByte(3);
-                dOut.writeUTF("This is the third type of message (Part 1).");
-                dOut.writeUTF("This is the third type of message (Part 2).");
-                dOut.flush(); // Send off the data
-
-// Send the exit message
-                dOut.writeByte(-1);
-                dOut.flush();
-
-
-
-
-                DataInputStream dIn = new DataInputStream(client.getInputStream());
-
-                boolean done = false;
-                while (!done) {
-                    byte messageType = dIn.readByte();
-
-                    switch (messageType) {
-                        case 1: // Type A
-                            Log.v("Nous ", "Message A :" + dIn.readUTF());
-                            break;
-                        case 2: // Type B
-                            Log.v("Nous ", "Message B :" + dIn.readUTF());
-                            break;
-                        case 3: // Type C
-                            Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
-                            Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
-                            break;
-                        default:
-
-                            done=true;
-                    }
-                }
-
-               // dOut.close();
-               // dIn.close();
-
-
-             //   client.close();
-              //  serverSocket.close();
-
-
-                return "reussi" ;
-            } catch (IOException e) {
-                Log.d("NOUS"," Erreur côté serveur: " + e.getMessage());
-
-            }
-            return null;
-        }
-
-    }
-
-
-    public class Client extends AsyncTask<Void, Void, String> implements Parcelable {
-
-
-        InetAddress IPserv;
-        SocketAddress sockaddr;
-
-        public Client(InetAddress serv) {
-            IPserv = serv;
-        }
-
-        public void setIPserv(InetAddress IP) {
-            IPserv = IP;
-        }
-
-
-        public String doInBackground(Void... params) {
-
-
-
-            try {
-
-                Log.v("Nous", "log1 niveau client");
-
-                InetAddress servaddr = IPserv;
-
-
-                // socket.bind(new InetSocketAddress(IPserv, 5560));
-
-                Log.v("NOUS","test avant log2");
-                Log.v("Nous", "log2 niveau client avec adresse du maître : " + IPserv + " numero de port " + 11000);
-                Socket socket = new Socket(IPserv,11000);
-                sockaddr=socket.getLocalSocketAddress();
-                Log.v("NOUS"," et socket adresse : " + sockaddr);
-
-                Log.v("Nous", "log3 niveau client");
-
-                DataInputStream dIn = new DataInputStream(socket.getInputStream());
-
-                boolean done = false;
-                while (!done) {
-                    byte messageType = dIn.readByte();
-
-                    switch (messageType) {
-                        case 1: // Type A
-                            Log.v("Nous ", "Message A :" + dIn.readUTF());
-                            break;
-                        case 2: // Type B
-                            Log.v("Nous ", "Message B :" + dIn.readUTF());
-                            break;
-                        case 3: // Type C
-                            Log.v("Nous ", "Message C,1 :" + dIn.readUTF());
-                            Log.v("Nous ", "Message C,2 :" + dIn.readUTF());
-                            break;
-                        default:
-
-                            done=true;
-                    }
-                }
-
-
-                Log.v("NOUS", "log4 juste avant le close()");
-                //dIn.close();
-                Log.v("NOUS", "log5 juste après le close()");
-
-                DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
-
-// Send first message
-                dOut.writeByte(1);
-                dOut.writeUTF("coucou jm");
-                dOut.flush(); // Send off the data
-
-// Send the second message
-                dOut.writeByte(2);
-                dOut.writeUTF("Maintenant message du client pour le serveur");
-                dOut.flush(); // Send off the data
-
-// Send the third message
-                dOut.writeByte(3);
-                dOut.writeUTF("1er message");
-                dOut.writeUTF("2ème message");
-                dOut.flush(); // Send off the data
-
-// Send the exit message
-                dOut.writeByte(-1);
-                dOut.flush();
-
-
-              //  dOut.close();
-
-
-            } catch (IOException e) {
-                Log.d("NOUS", "Erreur coté client: " + e.getMessage());
-                ;
-            }
-
-            return IPserv.toString();
-
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-
-            
-        }
-    }
-    */
 
 }

@@ -29,7 +29,7 @@ import java.net.UnknownHostException;
  */
 class Sender implements Runnable {
 
-    Sender(String message, DatagramSocket socket, WifiP2PActivity act, String pseudo) {
+    Sender(String message, DatagramSocket socket, WifiP2PActivity act, String pseudo) { // constructeur afin que le string message doitrelayer de l'autre côté que normalement
 
         this.act = act;
         this.message = message;
